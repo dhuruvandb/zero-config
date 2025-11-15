@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zero-Config MERN Starter</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9fafb;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #3498db;
+      color: #fff;
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    header p {
+      margin: 0.5rem 0 0;
+      font-size: 1.2rem;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .feature {
+      background-color: #fff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+    }
+
+    .feature h2 {
+      color: #2c3e50;
+    }
+
+    ul {
+      margin: 0.5rem 0 0 1.5rem;
+    }
+
+    pre {
+      background-color: #eee;
+      padding: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      margin: 2rem auto;
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      background-color: #2ecc71;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #27ae60;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .highlight {
+      color: #e67e22;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Zero-Config MERN Starter</h1>
+    <p>Download, Install, Run — Start Building Instantly!</p>
+  </header>
+
+  <main>
+    <div class="feature">
+      <h2>Why This Starter?</h2>
+      <p>
+        Forget the headaches of setting up a MERN stack project. With our <span class="highlight">Zero-Config MERN Starter</span>:
+      </p>
+      <ul>
+        <li>Download a zip file and extract it — no installation scripts or boilerplate hassles.</li>
+        <li>Install dependencies separately for <strong>client</strong> and <strong>server</strong>.</li>
+        <li>Start both servers with <code>npm run dev</code> in each folder.</li>
+        <li>If you don't provide a MongoDB URI — <strong>no worries!</strong> MongoDB Memory Server handles it automatically for rapid prototyping.</li>
+        <li>Instantly make API calls and interact with your backend — <strong>BOOM!</strong> you're ready to build.</li>
+      </ul>
+    </div>
+
+    <div class="feature">
+      <h2>How To Use</h2>
+      <p>Just follow these simple steps:</p>
+      <pre>
+1. Download the MERN starter zip file
+2. Extract it anywhere you like
+3. Open a terminal in the <strong>server</strong> folder and run:
+   cd server
+   npm install
+   npm run dev
+4. Open another terminal in the <strong>client</strong> folder and run:
+   cd client
+   npm install
+   npm run dev
+5. Access the frontend at http://localhost:5173 and the API at http://localhost:5000
+6. Start building your project instantly!
+      </pre>
+    </div>
+
+    <div class="feature">
+      <h2>Rapid Prototyping Made Easy</h2>
+      <p>
+        No MongoDB setup? No problem. This starter uses <strong>MongoDB Memory Server</strong> automatically if no URI is provided. 
+        You can start prototyping APIs, testing CRUD functionality, and building features without waiting for DB setup.
+      </p>
+    </div>
+
+    <button id="generateBtn">Download MERN Starter</button>
+  </main>
+
+  <script>
+    const button = document.getElementById('generateBtn');
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+      button.textContent = 'Generating...';
+
+      try {
+        const response = await fetch('http://localhost:8000/api/generate-mern-starter');
+        if (!response.ok) throw new Error('Failed to generate project');
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'mern-starter.zip';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+        button.textContent = 'Download Complete';
+      } catch (err) {
+        console.error(err);
+        button.textContent = 'Error! Try Again';
+      } finally {
+        setTimeout(() => {
+          button.disabled = false;
+          button.textContent = 'Download MERN Starter';
+        }, 2000);
+      }
+    });
+  </script>
+
+  <footer>
+    <p>🚀 Build your MERN project faster. Zero config. Zero headaches. Just code.</p>
+  </footer>
+</body>
+</html>
