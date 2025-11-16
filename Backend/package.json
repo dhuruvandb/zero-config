@@ -8,21 +8,21 @@
     "dev": "nodemon ./app.ts"
   },
   "dependencies": {
-    "express": "^5.1.0",
+    "archiver": "^7.0.1",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
-    "archiver": "^7.0.1",
+    "express": "^5.1.0",
     "express-rate-limit": "^8.2.1",
     "mongodb-memory-server": "^10.3.0",
     "mongoose": "^8.19.3",
     "ws": "^8.18.3"
   },
   "devDependencies": {
-    "typescript": "^5.9.3",
-    "@types/node": "^20.11.30",
-    "@types/express": "^5.0.5",
+    "@types/archiver": "^7.0.0",
     "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.5",
+    "@types/node": "^20.19.25",
     "@types/ws": "^8.5.10",
-    "@types/archiver": "^7.0.0"
+    "typescript": "^5.9.3"
   }
 }
