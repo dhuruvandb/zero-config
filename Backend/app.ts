@@ -189,15 +189,23 @@ app.get("/api/generate-mern-starter", async (req: Request, res: Response) => {
     broadcastProgress(30, "Replaced App.tsx");
 
     // ------------------------------------
-    // 2. Generate backend
+    // 2. Generate backend with structured folders
     // ------------------------------------
     console.log("Generating backend...");
     broadcastProgress(40, "Generating backend...");
 
     const serverDir = path.join(tempDir, "server");
-    fs.mkdirSync(serverDir, { recursive: true });
-    fs.mkdirSync(path.join(serverDir, "src"), { recursive: true });
+    const srcDir = path.join(serverDir, "src");
 
+    const configDir = path.join(srcDir, "config");
+    const modelsDir = path.join(srcDir, "models");
+    const routesDir = path.join(srcDir, "routes");
+
+    fs.mkdirSync(configDir, { recursive: true });
+    fs.mkdirSync(modelsDir, { recursive: true });
+    fs.mkdirSync(routesDir, { recursive: true });
+
+    // --- package.json ---
     const serverPackageJson = {
       name: "server",
       version: "1.0.0",
@@ -217,13 +225,13 @@ app.get("/api/generate-mern-starter", async (req: Request, res: Response) => {
         "ts-node-dev": "^2.0.0",
       },
     };
-
     fs.writeFileSync(
       path.join(serverDir, "package.json"),
       JSON.stringify(serverPackageJson, null, 2)
     );
     broadcastProgress(50, "Created server package.json");
 
+    // --- tsconfig.json ---
     const tsconfigServer = {
       compilerOptions: {
         target: "ES2020",
@@ -235,32 +243,17 @@ app.get("/api/generate-mern-starter", async (req: Request, res: Response) => {
         skipLibCheck: true,
       },
     };
-
     fs.writeFileSync(
       path.join(serverDir, "tsconfig.json"),
       JSON.stringify(tsconfigServer, null, 2)
     );
     broadcastProgress(55, "Created tsconfig.json for server");
 
-    const indexTs = `
-import express from 'express';
-import cors from 'cors';
-import mongoose from 'mongoose';
+    // --- src/config/db.ts ---
+    const dbTs = `import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import dotenv from "dotenv";
-dotenv.config();
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-const itemSchema = new mongoose.Schema({
-  name: String,
-});
-
-const Item = mongoose.model('Item', itemSchema);
-
-async function connectDB() {
+export default async function connectDB() {
   if (process.env.MONGO_URI) {
     try {
       await mongoose.connect(process.env.MONGO_URI);
@@ -275,31 +268,69 @@ async function connectDB() {
   const uri = mongoServer.getUri();
   await mongoose.connect(uri);
   console.log('Connected to in-memory MongoDB');
-}
+}`;
+    fs.writeFileSync(path.join(configDir, "db.ts"), dbTs);
 
-connectDB();
+    // --- src/models/item.ts ---
+    const itemModelTs = `import mongoose from 'mongoose';
 
-app.get('/api/items', async (_req, res) => {
+const itemSchema = new mongoose.Schema({
+  name: String,
+});
+
+const Item = mongoose.model('Item', itemSchema);
+export default Item;`;
+    fs.writeFileSync(path.join(modelsDir, "item.ts"), itemModelTs);
+
+    // --- src/routes/itemRoutes.ts ---
+    const itemRoutesTs = `import { Router } from 'express';
+import Item from '../models/item';
+
+const router = Router();
+
+router.get('/', async (_req, res) => {
   const items = await Item.find();
   res.json(items);
 });
 
-app.post('/api/items', async (req, res) => {
+router.post('/', async (req, res) => {
   const item = new Item(req.body);
   await item.save();
   res.json(item);
 });
 
-app.delete('/api/items/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
   await Item.findByIdAndDelete(req.params.id);
   res.json({ message: 'Deleted' });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(\`Server running on \${PORT}\`));
-`;
+export default router;`;
+    fs.writeFileSync(path.join(routesDir, "itemRoutes.ts"), itemRoutesTs);
 
-    fs.writeFileSync(path.join(serverDir, "src/index.ts"), indexTs);
+    // --- src/index.ts ---
+    const indexTs = `import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import connectDB from './config/db';
+import itemRoutes from './routes/itemRoutes';
+
+dotenv.config();
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Connect to MongoDB
+connectDB();
+
+// Routes
+app.use('/api/items', itemRoutes);
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(\`Server running on \${PORT}\`));`;
+    fs.writeFileSync(path.join(srcDir, "index.ts"), indexTs);
+
+    // --- .env ---
     fs.writeFileSync(path.join(serverDir, ".env"), `MONGO_URI=\nPORT=5000\n`);
     broadcastProgress(65, "Backend files created");
 
