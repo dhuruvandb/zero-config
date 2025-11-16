@@ -5,151 +5,78 @@ import archiver from "archiver";
 import os from "os";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
-// ----- 1. Load environment variables from .env -----
 import dotenv from "dotenv";
+import { spawn } from "child_process";
+import { WebSocketServer } from "ws";
+
 dotenv.config();
+
 const app = express();
 const PORT = 8000;
+
 app.use(cors({ origin: process.env.FRONTEND_URL || "*" }));
 
-// ----- 3. Rate limiting to prevent DoS -----
+// Rate limiting
 const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 5, // max 5 requests per minute per IP
+  windowMs: 60 * 1000,
+  max: 5,
   message: "Too many requests, please try again later.",
 });
 app.use("/api/generate-mern-starter", limiter);
 
-app.get("/api/generate-mern-starter", async (req: Request, res: Response) => {
-  const tempDir = path.join(os.tmpdir(), `mern-starter-${Date.now()}`);
-  try {
-    // Create a temp directory
-
-    fs.mkdirSync(tempDir, { recursive: true });
-
-    // Create folder structure: client and server
-    const clientDir = path.join(tempDir, "client");
-    const serverDir = path.join(tempDir, "server");
-    fs.mkdirSync(clientDir);
-    fs.mkdirSync(serverDir);
-
-    // Write full Vite React TS template files here
-
-    // package.json
-    const clientPackageJson = {
-      name: "client",
-      version: "0.0.0",
-      scripts: {
-        dev: "vite",
-        build: "tsc && vite build",
-        preview: "vite preview",
-      },
-      dependencies: {
-        react: "^18.2.0",
-        "react-dom": "^18.2.0",
-      },
-      devDependencies: {
-        "@types/react": "^18.0.27",
-        "@types/react-dom": "^18.0.10",
-        typescript: "^5.1.3",
-        vite: "^4.2.1",
-        "@vitejs/plugin-react": "^3.1.0",
-      },
-    };
-    fs.writeFileSync(
-      path.join(clientDir, "package.json"),
-      JSON.stringify(clientPackageJson, null, 2)
-    );
-
-    // vite.config.ts
-    const viteConfig = `import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-
-export default defineConfig({
-  plugins: [react()],
+const wss = new WebSocketServer({ port: 8080 });
+wss.on("connection", (ws) => {
+  console.log("Client connected for progress updates");
 });
-`;
-    fs.writeFileSync(path.join(clientDir, "vite.config.ts"), viteConfig);
 
-    // tsconfig.json
-    const tsconfigClient = {
-      compilerOptions: {
-        target: "ESNext",
-        useDefineForClassFields: true,
-        lib: ["DOM", "DOM.Iterable", "ESNext"],
-        allowJs: false,
-        skipLibCheck: true,
-        esModuleInterop: false,
-        allowSyntheticDefaultImports: true,
-        strict: true,
-        forceConsistentCasingInFileNames: true,
-        module: "ESNext",
-        moduleResolution: "Node",
-        resolveJsonModule: true,
-        isolatedModules: true,
-        noEmit: true,
-        jsx: "react-jsx",
-      },
-      include: ["src"],
-      references: [{ path: "./tsconfig.node.json" }],
-    };
-    fs.writeFileSync(
-      path.join(clientDir, "tsconfig.json"),
-      JSON.stringify(tsconfigClient, null, 2)
+// Helper to broadcast progress to all connected clients
+function broadcastProgress(percent: number, text?: string) {
+  wss.clients.forEach((client) => {
+    if (client.readyState === 1) {
+      client.send(JSON.stringify({ progress: percent, text }));
+    }
+  });
+}
+
+/** ----------------------------------------------
+ *  Helper → Run "npx create-vite" non-interactively
+ * ---------------------------------------------- */
+function createViteReactProject(tempDir: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(
+      "npx",
+      ["create-vite@latest", "client", "--template", "react-ts"],
+      {
+        cwd: tempDir,
+        stdio: "pipe",
+        shell: true,
+      }
     );
 
-    // tsconfig.node.json
-    const tsconfigNode = {
-      compilerOptions: {
-        composite: true,
-        module: "NodeNext",
-        moduleResolution: "Node",
-        allowSyntheticDefaultImports: true,
-        esModuleInterop: true,
-        skipLibCheck: true,
-        types: ["node"],
-      },
-      include: ["vite.config.ts"],
-    };
-    fs.writeFileSync(
-      path.join(clientDir, "tsconfig.node.json"),
-      JSON.stringify(tsconfigNode, null, 2)
-    );
+    child.stdout.on("data", (data) => {
+      const text = data.toString();
+      console.log("Vite:", text);
 
-    // index.html
-    const indexHtml = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
-`;
-    fs.writeFileSync(path.join(clientDir, "index.html"), indexHtml);
+      if (text.includes("Use rolldown-vite")) {
+        child.stdin.write("n\n");
+      }
 
-    // src/main.tsx
-    const srcDir = path.join(clientDir, "src");
-    fs.mkdirSync(srcDir);
-    const mainTsx = `import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
+      if (text.includes("Install with npm and start now?")) {
+        child.stdin.write("n\n");
+      }
+    });
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
-`;
-    fs.writeFileSync(path.join(srcDir, "main.tsx"), mainTsx);
+    child.on("close", (code) => {
+      if (code === 0) resolve();
+      else reject(new Error("create-vite failed with code " + code));
+    });
+  });
+}
 
-    // src/App.tsx
-    const appTsx = `import React, { useEffect, useState } from "react";
+/** ----------------------------------------------
+ *  Your custom App.tsx to replace Vite’s default
+ * ---------------------------------------------- */
+const customAppTsx = `import React, { useEffect, useState } from "react";
 
 interface Item {
   _id?: string;
@@ -160,12 +87,10 @@ function App() {
   const [items, setItems] = useState<Item[]>([]);
   const [newItem, setNewItem] = useState<string>("");
 
-  // API_URL declaration in Markdown-style code block
   const API_URL = \`
 http://localhost:5000/api/items
 \`;
 
-  // Fetch all items
   const fetchItems = async () => {
     try {
       const res = await fetch(API_URL.trim());
@@ -176,7 +101,6 @@ http://localhost:5000/api/items
     }
   };
 
-  // Add a new item
   const addItem = async () => {
     if (!newItem.trim()) return;
     try {
@@ -193,7 +117,6 @@ http://localhost:5000/api/items
     }
   };
 
-  // Delete an item
   const deleteItem = async (id: string) => {
     try {
       await fetch(\`\${API_URL.trim()}/\${id}\`, { method: "DELETE" });
@@ -227,7 +150,11 @@ http://localhost:5000/api/items
         {items.map((item) => (
           <li key={item._id} style={{ marginBottom: "0.5rem" }}>
             {item.name}{" "}
-            <button onClick={() => item._id && deleteItem(item._id)}>Delete</button>
+            <button
+              onClick={() => item._id && deleteItem(item._id)}
+            >
+              Delete
+            </button>
           </li>
         ))}
       </ul>
@@ -237,12 +164,40 @@ http://localhost:5000/api/items
   );
 }
 
-export default App;`;
-    fs.writeFileSync(path.join(srcDir, "App.tsx"), appTsx);
+export default App;
+`;
 
-    // -- Your existing backend creation code remains unchanged and follows here --
+/** ----------------------------------------------
+ *  MAIN ROUTE — Generate MERN project
+ * ---------------------------------------------- */
+app.get("/api/generate-mern-starter", async (req: Request, res: Response) => {
+  const tempDir = path.join(os.tmpdir(), `mern-starter-${Date.now()}`);
 
-    // Backend package.json with Express + TS + Mongoose + in-memory MongoDB
+  try {
+    fs.mkdirSync(tempDir, { recursive: true });
+
+    // ------------------------------------
+    // 1. Generate frontend using Vite
+    // ------------------------------------
+    console.log("Generating Vite frontend...");
+    broadcastProgress(5, "Generating Vite frontend...");
+    await createViteReactProject(tempDir);
+    broadcastProgress(20, "Frontend generated");
+
+    // Replace Vite's App.tsx with your custom App.tsx
+    fs.writeFileSync(path.join(tempDir, "client/src/App.tsx"), customAppTsx);
+    broadcastProgress(30, "Replaced App.tsx");
+
+    // ------------------------------------
+    // 2. Generate backend
+    // ------------------------------------
+    console.log("Generating backend...");
+    broadcastProgress(40, "Generating backend...");
+
+    const serverDir = path.join(tempDir, "server");
+    fs.mkdirSync(serverDir, { recursive: true });
+    fs.mkdirSync(path.join(serverDir, "src"), { recursive: true });
+
     const serverPackageJson = {
       name: "server",
       version: "1.0.0",
@@ -262,12 +217,13 @@ export default App;`;
         "ts-node-dev": "^2.0.0",
       },
     };
+
     fs.writeFileSync(
       path.join(serverDir, "package.json"),
       JSON.stringify(serverPackageJson, null, 2)
     );
+    broadcastProgress(50, "Created server package.json");
 
-    // Backend tsconfig.json
     const tsconfigServer = {
       compilerOptions: {
         target: "ES2020",
@@ -279,21 +235,21 @@ export default App;`;
         skipLibCheck: true,
       },
     };
+
     fs.writeFileSync(
       path.join(serverDir, "tsconfig.json"),
       JSON.stringify(tsconfigServer, null, 2)
     );
-
-    // Backend source index.ts
-    const backendSrc = path.join(serverDir, "src");
-    fs.mkdirSync(backendSrc);
+    broadcastProgress(55, "Created tsconfig.json for server");
 
     const indexTs = `
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -301,6 +257,7 @@ app.use(express.json());
 const itemSchema = new mongoose.Schema({
   name: String,
 });
+
 const Item = mongoose.model('Item', itemSchema);
 
 async function connectDB() {
@@ -313,6 +270,7 @@ async function connectDB() {
       console.error('Failed to connect to MONGO_URI, falling back to in-memory DB.');
     }
   }
+
   const mongoServer = await MongoMemoryServer.create();
   const uri = mongoServer.getUri();
   await mongoose.connect(uri);
@@ -341,12 +299,11 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(\`Server running on \${PORT}\`));
 `;
 
-    fs.writeFileSync(path.join(backendSrc, "index.ts"), indexTs);
-
-    // .env file contents
+    fs.writeFileSync(path.join(serverDir, "src/index.ts"), indexTs);
     fs.writeFileSync(path.join(serverDir, ".env"), `MONGO_URI=\nPORT=5000\n`);
+    broadcastProgress(65, "Backend files created");
 
-    // Setup run shell script
+    // Setup README
     const runScript = `# MERN Starter Template
 
 This project is a boilerplate starter for building full-stack MERN applications with TypeScript support.
@@ -357,7 +314,7 @@ mern-starter/
 ├── client/        # React + Vite frontend
 ├── server/        # Express + MongoDB backend
 ├── README.md      # This file
-    
+  
 
 ## Getting Started
 
@@ -422,8 +379,11 @@ npm run dev
 The frontend will be accessible at \`http://localhost:5173\`, and it communicates automatically with the backend at \`http://localhost:5000\`.`;
 
     fs.writeFileSync(path.join(tempDir, "README.md"), runScript);
+    broadcastProgress(70, "README.md created");
 
-    // Prepare the zip archive and stream it as the response
+    // ------------------------------------
+    // 4. ZIP and send
+    // ------------------------------------
     res.setHeader("Content-Type", "application/zip");
     res.setHeader(
       "Content-Disposition",
@@ -431,24 +391,31 @@ The frontend will be accessible at \`http://localhost:5173\`, and it communicate
     );
 
     const archive = archiver("zip", { zlib: { level: 9 } });
-    archive.on("error", (err: Error) => {
+    archive.pipe(res);
+
+    archive.on("progress", (progress) => {
+      const percent = Math.round(
+        (progress.entries.processed / progress.entries.total) * 100
+      );
+      broadcastProgress(percent, "Zipping project...");
+    });
+
+    archive.on("error", (err) => {
       console.error("Archive error:", err);
       res.status(500).send("Internal Server Error");
     });
 
-    archive.on("end", () => {
+    archive.on("finish", () => {
       try {
         fs.rmSync(tempDir, { recursive: true, force: true });
+        broadcastProgress(100, "Done! Download started");
         console.log("Temp directory cleaned up:", tempDir);
       } catch (err) {
         console.error("Failed to delete temp dir:", err);
       }
-      res.end();
     });
 
-    archive.pipe(res);
     archive.directory(tempDir, false);
-
     await archive.finalize();
   } catch (error) {
     console.error("Error generating MERN starter:", error);
