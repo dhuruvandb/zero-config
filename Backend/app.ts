@@ -7,13 +7,13 @@ import cors from "cors";
 import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 import { spawn } from "child_process";
-import { WebSocketServer } from "ws";
 
 dotenv.config();
 
 const app = express();
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 
+// CORS
 app.use(cors({ origin: process.env.FRONTEND_URL || "*" }));
 
 // Rate limiting
@@ -24,22 +24,8 @@ const limiter = rateLimit({
 });
 app.use("/api/generate-mern-starter", limiter);
 
-const wss = new WebSocketServer({ port: 8080 });
-wss.on("connection", (ws) => {
-  console.log("Client connected for progress updates");
-});
-
-// Helper to broadcast progress to all connected clients
-function broadcastProgress(percent: number, text?: string) {
-  wss.clients.forEach((client) => {
-    if (client.readyState === 1) {
-      client.send(JSON.stringify({ progress: percent, text }));
-    }
-  });
-}
-
 /** ----------------------------------------------
- *  Helper → Run "npx create-vite" non-interactively
+ * Helper → Run "npx create-vite" non-interactively
  * ---------------------------------------------- */
 function createViteReactProject(tempDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -168,35 +154,24 @@ export default App;
 `;
 
 /** ----------------------------------------------
- *  MAIN ROUTE — Generate MERN project
+ * MAIN ROUTE → Generate MERN starter
  * ---------------------------------------------- */
-app.get("/api/generate-mern-starter", async (req: Request, res: Response) => {
+app.get("/api/generate-mern-starter", async (_req: Request, res: Response) => {
   const tempDir = path.join(os.tmpdir(), `mern-starter-${Date.now()}`);
 
   try {
     fs.mkdirSync(tempDir, { recursive: true });
 
-    // ------------------------------------
-    // 1. Generate frontend using Vite
-    // ------------------------------------
+    // 1. Generate frontend
     console.log("Generating Vite frontend...");
-    broadcastProgress(5, "Generating Vite frontend...");
     await createViteReactProject(tempDir);
-    broadcastProgress(20, "Frontend generated");
 
-    // Replace Vite's App.tsx with your custom App.tsx
+    // Replace App.tsx
     fs.writeFileSync(path.join(tempDir, "client/src/App.tsx"), customAppTsx);
-    broadcastProgress(30, "Replaced App.tsx");
 
-    // ------------------------------------
-    // 2. Generate backend with structured folders
-    // ------------------------------------
-    console.log("Generating backend...");
-    broadcastProgress(40, "Generating backend...");
-
+    // 2. Backend folders
     const serverDir = path.join(tempDir, "server");
     const srcDir = path.join(serverDir, "src");
-
     const configDir = path.join(srcDir, "config");
     const modelsDir = path.join(srcDir, "models");
     const routesDir = path.join(srcDir, "routes");
@@ -205,7 +180,7 @@ app.get("/api/generate-mern-starter", async (req: Request, res: Response) => {
     fs.mkdirSync(modelsDir, { recursive: true });
     fs.mkdirSync(routesDir, { recursive: true });
 
-    // --- package.json ---
+    // package.json
     const serverPackageJson = {
       name: "server",
       version: "1.0.0",
@@ -229,9 +204,8 @@ app.get("/api/generate-mern-starter", async (req: Request, res: Response) => {
       path.join(serverDir, "package.json"),
       JSON.stringify(serverPackageJson, null, 2)
     );
-    broadcastProgress(50, "Created server package.json");
 
-    // --- tsconfig.json ---
+    // tsconfig.json
     const tsconfigServer = {
       compilerOptions: {
         target: "ES2020",
@@ -247,7 +221,6 @@ app.get("/api/generate-mern-starter", async (req: Request, res: Response) => {
       path.join(serverDir, "tsconfig.json"),
       JSON.stringify(tsconfigServer, null, 2)
     );
-    broadcastProgress(55, "Created tsconfig.json for server");
 
     // --- src/config/db.ts ---
     const dbTs = `import mongoose from 'mongoose';
@@ -332,7 +305,6 @@ app.listen(PORT, () => console.log(\`Server running on \${PORT}\`));`;
 
     // --- .env ---
     fs.writeFileSync(path.join(serverDir, ".env"), `MONGO_URI=\nPORT=5000\n`);
-    broadcastProgress(65, "Backend files created");
 
     // Setup README
     const runScript = `# MERN Starter Template
@@ -410,7 +382,6 @@ npm run dev
 The frontend will be accessible at \`http://localhost:5173\`, and it communicates automatically with the backend at \`http://localhost:5000\`.`;
 
     fs.writeFileSync(path.join(tempDir, "README.md"), runScript);
-    broadcastProgress(70, "README.md created");
 
     // ------------------------------------
     // 4. ZIP and send
@@ -428,7 +399,6 @@ The frontend will be accessible at \`http://localhost:5173\`, and it communicate
       const percent = Math.round(
         (progress.entries.processed / progress.entries.total) * 100
       );
-      broadcastProgress(percent, "Zipping project...");
     });
 
     archive.on("error", (err) => {
@@ -439,7 +409,6 @@ The frontend will be accessible at \`http://localhost:5173\`, and it communicate
     archive.on("finish", () => {
       try {
         fs.rmSync(tempDir, { recursive: true, force: true });
-        broadcastProgress(100, "Done! Download started");
         console.log("Temp directory cleaned up:", tempDir);
       } catch (err) {
         console.error("Failed to delete temp dir:", err);
@@ -448,6 +417,9 @@ The frontend will be accessible at \`http://localhost:5173\`, and it communicate
 
     archive.directory(tempDir, false);
     await archive.finalize();
+
+    // Clean temp folder
+    fs.rmSync(tempDir, { recursive: true, force: true });
   } catch (error) {
     console.error("Error generating MERN starter:", error);
     if (fs.existsSync(tempDir)) {

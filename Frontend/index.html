@@ -89,34 +89,6 @@
         color: #e67e22;
         font-weight: bold;
       }
-
-      /* Progress bar */
-      #progressContainer {
-        width: 100%;
-        max-width: 400px;
-        background-color: #eee;
-        border-radius: 8px;
-        overflow: hidden;
-        margin: 1rem auto;
-        display: none;
-      }
-
-      #progressBar {
-        width: 0;
-        height: 24px;
-        background-color: #2ecc71;
-        text-align: center;
-        color: white;
-        line-height: 24px;
-        font-weight: bold;
-        transition: width 0.2s;
-      }
-
-      #progressText {
-        text-align: center;
-        margin-top: 0.5rem;
-        font-weight: bold;
-      }
     </style>
   </head>
   <body>
@@ -176,11 +148,6 @@
       </div>
 
       <button id="generateBtn">Download MERN Starter</button>
-
-      <div id="progressContainer">
-        <div id="progressBar">0%</div>
-        <div id="progressText">Starting...</div>
-      </div>
     </main>
 
     <footer>
@@ -192,49 +159,10 @@
 
     <script>
       const button = document.getElementById("generateBtn");
-      const progressContainer = document.getElementById("progressContainer");
-      const progressBar = document.getElementById("progressBar");
-      const progressText = document.getElementById("progressText");
-
-      let ws;
-
-      function connectWebSocket() {
-        ws = new WebSocket("ws://localhost:8080");
-
-        ws.onopen = () => {
-          console.log("Connected to progress WebSocket");
-        };
-
-        ws.onmessage = (event) => {
-          const data = JSON.parse(event.data);
-          if (data.progress !== undefined) {
-            progressContainer.style.display = "block";
-            progressBar.style.width = data.progress + "%";
-            progressBar.textContent = data.progress + "%";
-            progressText.textContent = `Progress: ${data.progress}%`;
-          }
-        };
-
-        ws.onclose = () => {
-          console.log("WebSocket closed. Reconnecting in 2s...");
-          setTimeout(connectWebSocket, 2000);
-        };
-
-        ws.onerror = (err) => {
-          console.error("WebSocket error:", err);
-          ws.close();
-        };
-      }
-
-      connectWebSocket();
 
       button.addEventListener("click", async () => {
         button.disabled = true;
         button.textContent = "Generating...";
-        progressContainer.style.display = "block";
-        progressBar.style.width = "0%";
-        progressBar.textContent = "0%";
-        progressText.textContent = "Starting...";
 
         try {
           const response = await fetch(
@@ -252,19 +180,14 @@
           a.remove();
           window.URL.revokeObjectURL(url);
 
-          progressBar.style.width = "100%";
-          progressBar.textContent = "100%";
-          progressText.textContent = "Completed!";
           button.textContent = "Download Complete";
         } catch (err) {
           console.error(err);
-          progressText.textContent = "Error! Try Again";
           button.textContent = "Error! Try Again";
         } finally {
           setTimeout(() => {
             button.disabled = false;
             button.textContent = "Download MERN Starter";
-            progressContainer.style.display = "none";
           }, 3000);
         }
       });
