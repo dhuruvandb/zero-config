@@ -7,27 +7,34 @@
     <style>
       body {
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f9fafb;
+        background: linear-gradient(to bottom, #f9fafb 0%, #e9ecef 100%);
         color: #333;
         margin: 0;
         padding: 0;
+        min-height: 100vh;
       }
 
       header {
-        background-color: #3498db;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: #fff;
-        padding: 2rem 1rem;
+        padding: 3rem 1rem;
         text-align: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
       }
 
       header h1 {
         margin: 0;
-        font-size: 2rem;
+        font-size: 2.5rem;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
       }
 
       header p {
-        margin: 0.5rem 0 0;
+        margin: 0.5rem 0 0 0;
         font-size: 1.2rem;
+        opacity: 0.95;
+        font-weight: 300;
       }
 
       main {
@@ -38,10 +45,17 @@
 
       .feature {
         background-color: #fff;
-        padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
         margin-bottom: 2rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .feature:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
       }
 
       .feature h2 {
@@ -49,14 +63,166 @@
       }
 
       ul {
-        margin: 0.5rem 0 0 1.5rem;
+        margin: 0 5rem 0 0 1.5rem;
       }
 
       pre {
-        background-color: #eee;
-        padding: 1rem;
-        border-radius: 6px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+        padding: 1.5rem;
+        border-radius: 8px;
         overflow-x: auto;
+        border: 1px solid #d0d7de;
+        font-family: "Consolas", "Monaco", "Courier New", monospace;
+        line-height: 1.6;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      /* Template selection styles */
+      .template-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin: 1.5rem 0;
+      }
+
+      .template-column {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .column-header {
+        text-align: center;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        padding: 0.75rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+      }
+
+      .template-option {
+        display: flex;
+        align-items: center;
+        padding: 1.25rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background-color: #fafafa;
+      }
+
+      .template-option:hover {
+        border-color: #667eea;
+        background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        transform: translateX(4px);
+      }
+
+      .template-option input[type="radio"] {
+        margin-right: 1rem;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        accent-color: #667eea;
+      }
+
+      .template-option.selected {
+        border-color: #667eea;
+        background: linear-gradient(135deg, #e8f0ff 0%, #d0e0ff 100%);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        transform: scale(1.02);
+      }
+
+      .selected-combo {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        display: none;
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+      }
+
+      .selected-combo.show {
+        display: block;
+        animation: slideDown 0.4s ease;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .selected-combo h3 {
+        color: white;
+        margin: 0 0 1rem 0;
+        font-size: 1.2rem;
+        text-align: center;
+      }
+
+      .combo-display {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 500;
+      }
+
+      .combo-item {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .combo-divider {
+        font-size: 1.5rem;
+        opacity: 0.8;
+      }
+
+      @media (max-width: 768px) {
+        .template-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .template-info {
+        flex: 1;
+      }
+
+      .template-info h3 {
+        margin: 0 0 0.5rem 0;
+        color: #2c3e50;
+      }
+
+      .template-info p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .template-icon {
+        font-size: 2rem;
+        margin-right: 1rem;
+        min-width: 50px;
+        text-align: center;
+      }
+
+      .template-info h3 {
+        font-size: 1.1rem;
       }
 
       button {
@@ -64,18 +230,28 @@
         width: 100%;
         max-width: 300px;
         margin: 2rem auto;
-        padding: 1rem 2rem;
+        padding: 1.2rem 2rem;
         font-size: 1.2rem;
-        background-color: #2ecc71;
+        font-weight: 600;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: #fff;
         border: none;
-        border-radius: 6px;
+        border-radius: 8px;
         cursor: pointer;
-        transition: background-color 0.3s;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+        letter-spacing: 0.5px;
       }
 
-      button:hover {
-        background-color: #27ae60;
+      button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(102, 126, 234, 0.6);
+        background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+      }
+
+      button:disabled {
+        background-color: #95a5a6;
+        cursor: not-allowed;
       }
 
       footer {
@@ -89,6 +265,48 @@
         color: #e67e22;
         font-weight: bold;
       }
+
+      .error-message {
+        color: #e74c3c;
+        text-align: center;
+        padding: 1rem;
+        background-color: #fadbd8;
+        border-radius: 6px;
+        margin: 1rem 0;
+        display: none;
+      }
+
+      .error-message.show {
+        display: block;
+      }
+
+      .warning-box {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 1.5rem 0;
+        border-left: 5px solid #c0392b;
+        box-shadow: 0 4px 16px rgba(245, 87, 108, 0.3);
+      }
+
+      .warning-box h3 {
+        margin: 0 0 1rem 0;
+        font-size: 1.3rem;
+        color: white;
+      }
+
+      .warning-box ol {
+        margin: 0;
+        padding-left: 1.5rem;
+        line-height: 1.8;
+      }
+
+      .warning-box strong {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+      }
     </style>
   </head>
   <body>
@@ -99,98 +317,284 @@
 
     <main>
       <div class="feature">
-        <h2>Why This Starter?</h2>
-        <p>
-          Forget the headaches of setting up a MERN stack project. With our
-          <span class="highlight">Zero-Config MERN Starter</span>:
-        </p>
-        <ul>
-          <li>
-            Download a zip file and extract it — no installation scripts or
-            boilerplate hassles.
-          </li>
-          <li>
-            Install dependencies separately for <strong>client</strong> and
-            <strong>server</strong>.
-          </li>
-          <li>
-            Start both servers with <code>npm run dev</code> in each folder.
-          </li>
-          <li>
-            If you don't provide a MongoDB URI —
-            <strong>no worries!</strong> MongoDB Memory Server handles it
-            automatically for rapid prototyping.
-          </li>
-          <li>
-            Instantly make API calls and interact with your backend —
-            <strong>BOOM!</strong> you're ready to build.
-          </li>
-        </ul>
+        <h2>Select Your Stack Combo</h2>
+        <p>Choose one frontend and one backend to create your perfect stack:</p>
+
+        <!-- Selected Combo Display -->
+        <div id="selectedCombo" class="selected-combo">
+          <h3>🎯 Your Selected Stack</h3>
+          <div class="combo-display" id="comboDisplay"></div>
+        </div>
+
+        <div class="template-grid" id="templateGrid">
+          <!-- Frontend Column -->
+          <div class="template-column">
+            <div class="column-header">⚡ Frontend</div>
+
+            <label
+              class="template-option"
+              data-template="react"
+              data-type="frontend"
+            >
+              <input type="radio" name="frontend" value="react" />
+              <span class="template-icon">⚛️</span>
+              <div class="template-info">
+                <h3>React + Vite</h3>
+                <p>Modern React with Vite bundler and TypeScript</p>
+              </div>
+            </label>
+
+            <label
+              class="template-option"
+              data-template="angular"
+              data-type="frontend"
+            >
+              <input type="radio" name="frontend" value="angular" />
+              <span class="template-icon">🅰️</span>
+              <div class="template-info">
+                <h3>Angular</h3>
+                <p>Full-featured Angular with routing</p>
+              </div>
+            </label>
+          </div>
+
+          <!-- Backend Column -->
+          <div class="template-column">
+            <div class="column-header">🔧 Backend</div>
+
+            <label
+              class="template-option"
+              data-template="express"
+              data-type="backend"
+            >
+              <input type="radio" name="backend" value="express" />
+              <span class="template-icon">🚀</span>
+              <div class="template-info">
+                <h3>Express.js + Mongodb</h3>
+                <p>RESTful API with Express.js and TypeScript and Mongoose</p>
+              </div>
+            </label>
+
+            <label
+              class="template-option"
+              data-template="nestjs"
+              data-type="backend"
+            >
+              <input type="radio" name="backend" value="nestjs" />
+              <span class="template-icon">🐱</span>
+              <div class="template-info">
+                <h3>NestJS + Postgres SQL</h3>
+                <p>Enterprise NestJS with Postgres SQL and Prisma ORM</p>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
       </div>
 
       <div class="feature">
         <h2>How To Use</h2>
-        <p>Just follow these simple steps:</p>
+
+        <div class="warning-box">
+          <h3>🚨 IMPORTANT: Windows Users - Do This FIRST!</h3>
+          <ol>
+            <li>After download, <strong>DO NOT extract yet</strong></li>
+            <li>
+              <strong>Right-click the ZIP file</strong> → Select "Properties"
+            </li>
+            <li>At the bottom, check the box: <strong>"Unblock"</strong></li>
+            <li>Click <strong>"Apply"</strong> then <strong>"OK"</strong></li>
+            <li>NOW you can extract without any warnings!</li>
+          </ol>
+          <p style="margin: 1rem 0 0 0; font-size: 0.95rem">
+            ⚡ This unblocks ALL files at once (.gitignore, .editorconfig, etc.)
+          </p>
+        </div>
+
+        <p>Installation steps:</p>
         <pre>
-1. Download the MERN starter zip file
-2. Extract it anywhere you like
-3. Open a terminal in the <strong>server</strong> folder and run:
-   cd server
+1. Select one frontend framework (React or Angular)
+2. Select one backend framework (Express.js or NestJS)
+3. Click "Download Stack"
+4. <strong>UNBLOCK THE ZIP FILE FIRST (see above)</strong>
+5. Extract the ZIP file
+6. For each template folder, run: 
+   cd [template-name]
    npm install
    npm run dev
-4. Open another terminal in the <strong>client</strong> folder and run:
-   cd client
-   npm install
-   npm run dev
-5. Access the frontend at http://localhost:5173 and the API at http://localhost:5000
-6. Start building your project instantly!
+7. Start building your full-stack project instantly!
         </pre>
       </div>
 
-      <button id="generateBtn">Download MERN Starter</button>
+      <button id="generateBtn">Download Stack</button>
     </main>
 
     <footer>
       <p>
-        🚀 Build your MERN project faster. Zero config. Zero headaches. Just
-        code.
+        🚀 Build your project faster. Zero config. Zero headaches. Just code.
       </p>
     </footer>
 
     <script>
       const button = document.getElementById("generateBtn");
+      const templateGrid = document.getElementById("templateGrid");
+      const errorMessage = document.getElementById("errorMessage");
+      const selectedCombo = document.getElementById("selectedCombo");
+      const comboDisplay = document.getElementById("comboDisplay");
+      const radioButtons = templateGrid.querySelectorAll('input[type="radio"]');
 
+      // Template data for display
+      const templateData = {
+        react: { name: "React + Vite", icon: "⚛️" },
+        angular: { name: "Angular", icon: "🅰️" },
+        express: { name: "Express.js", icon: "🚀" },
+        nestjs: { name: "NestJS", icon: "🐱" },
+      };
+
+      let selectedFrontend = null;
+      let selectedBackend = null;
+
+      // Update selected combo display
+      function updateComboDisplay() {
+        if (selectedFrontend && selectedBackend) {
+          const frontendData = templateData[selectedFrontend];
+          const backendData = templateData[selectedBackend];
+
+          comboDisplay.innerHTML = `
+            <div class="combo-item">
+              <span>${frontendData.icon}</span>
+              <span>${frontendData.name}</span>
+            </div>
+            <div class="combo-divider">+</div>
+            <div class="combo-item">
+              <span>${backendData.icon}</span>
+              <span>${backendData.name}</span>
+            </div>
+          `;
+          selectedCombo.classList.add("show");
+        } else {
+          selectedCombo.classList.remove("show");
+        }
+      }
+
+      // Add visual feedback for selected templates
+      radioButtons.forEach((radio) => {
+        radio.addEventListener("change", (e) => {
+          const option = e.target.closest(".template-option");
+          const type = option.dataset.type;
+
+          // Remove selected class from all options of this type
+          document.querySelectorAll(`[data-type="${type}"]`).forEach((opt) => {
+            opt.classList.remove("selected");
+          });
+
+          // Add selected class to current option
+          if (e.target.checked) {
+            option.classList.add("selected");
+
+            // Update selected values
+            if (type === "frontend") {
+              selectedFrontend = e.target.value;
+            } else {
+              selectedBackend = e.target.value;
+            }
+
+            // Update combo display
+            updateComboDisplay();
+          }
+
+          // Clear error message when selection changes
+          errorMessage.classList.remove("show");
+        });
+      });
+
+      // Make the entire label clickable
+      document.querySelectorAll(".template-option").forEach((option) => {
+        option.addEventListener("click", (e) => {
+          // Don't trigger if clicking the radio itself
+          if (e.target.type !== "radio") {
+            const radio = option.querySelector('input[type="radio"]');
+            radio.checked = true;
+            radio.dispatchEvent(new Event("change"));
+          }
+        });
+      });
+
+      // Main download function
       button.addEventListener("click", async () => {
+        // Validation
+        if (!selectedFrontend || !selectedBackend) {
+          showError("Please select both a frontend and a backend");
+          return;
+        }
+
+        const selectedTemplates = [selectedFrontend, selectedBackend];
+
+        // Update button state
         button.disabled = true;
+        const originalText = button.textContent;
         button.textContent = "Generating...";
+        errorMessage.classList.remove("show");
 
         try {
-          const response = await fetch(
-            "https://zero-config-mern-starter-generator.onrender.com/api/generate-mern-starter"
-          );
-          if (!response.ok) throw new Error("Failed to generate project");
+          // Call the backend API
+          const response = await fetch("http://localhost:8000/api/templates", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              templates: selectedTemplates,
+            }),
+          });
 
+          // Handle errors
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Failed to generate templates");
+          }
+
+          // Download the ZIP file
           const blob = await response.blob();
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = "mern-starter.zip";
+
+          // Create a descriptive filename
+          const filename = `${selectedFrontend}-${selectedBackend}-stack.zip`;
+
+          a.download = filename;
           document.body.appendChild(a);
           a.click();
           a.remove();
           window.URL.revokeObjectURL(url);
 
-          button.textContent = "Download Complete";
+          // Success feedback
+          button.textContent = "✓ Download Complete!";
+          button.style.backgroundColor = "#27ae60";
         } catch (err) {
-          console.error(err);
+          console.error("Download error:", err);
+          showError(
+            err.message || "Failed to download templates. Please try again."
+          );
           button.textContent = "Error! Try Again";
+          button.style.backgroundColor = "#e74c3c";
         } finally {
+          // Reset button after 3 seconds
           setTimeout(() => {
             button.disabled = false;
-            button.textContent = "Download MERN Starter";
+            button.textContent = originalText;
+            button.style.backgroundColor = "";
           }, 3000);
         }
       });
+
+      // Helper function to show errors
+      function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.classList.add("show");
+      }
     </script>
   </body>
 </html>
