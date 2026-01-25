@@ -5,6 +5,11 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  @Get("/health")
+  getHealthStatus() {
+    return { status: 'ok' };
+  }
+
   @Get('/templates')
   getAvailableTemplates() {
     return this.appService.getAvailableTemplates();
