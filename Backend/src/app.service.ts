@@ -16,6 +16,7 @@ export class AppService {
     angular: 'angular',
     express: 'express',
     nestjs: 'nestjs',
+    nextjs: 'nextjs',
   };
 
   private readonly GITHUB_ZIP_URL =

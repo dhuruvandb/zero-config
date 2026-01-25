@@ -9,13 +9,60 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   const templateData = {
-    react: { name: 'React + Vite', icon: '⚛️' },
-    angular: { name: 'Angular', icon: '🅰️' },
-    express: { name: 'Express.js', icon: '🚀' },
-    nestjs: { name: 'NestJS', icon: '🐱' },
+    react: { name: 'React + Vite', icon: '⚛️', type: 'frontend' },
+    angular: { name: 'Angular', icon: '🅰️', type: 'frontend' },
+    nextjs: { name: 'Next.js (Full-Stack)', icon: '▲', type: 'standalone' },
+    express: { name: 'Express.js', icon: '🚀', type: 'backend' },
+    nestjs: { name: 'NestJS', icon: '🐱', type: 'backend' },
   };
 
   const handleDownload = async () => {
+    // If Next.js standalone is selected, only download that
+    if (selectedFrontend === 'nextjs') {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/templates`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              templates: ['nextjs'],
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to generate template');
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `nextjs-fullstack.zip`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Failed to download template. Please try again.'
+        );
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    // For traditional frontend + backend combo
     if (!selectedFrontend || !selectedBackend) {
       setError('Please select both a frontend and a backend');
       return;
@@ -26,7 +73,7 @@ export default function Home() {
 
     try {
       const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL||'http://localhost:8000'}/api/templates`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/templates`,
         {
           method: 'POST',
           headers: {
@@ -52,8 +99,6 @@ export default function Home() {
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
-      console.log(templateData[selectedFrontend as keyof typeof templateData].name);
-      
     } catch (err) {
       setError(
         err instanceof Error
@@ -64,6 +109,9 @@ export default function Home() {
       setLoading(false);
     }
   };
+
+  const isStandalone = selectedFrontend === 'nextjs';
+  const canDownload = isStandalone || (selectedFrontend && selectedBackend);
 
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom, #f9fafb 0%, #e9ecef 100%)' }}>
@@ -76,7 +124,7 @@ export default function Home() {
         className="text-white py-12 text-center"
       >
         <h1 className="text-5xl font-bold m-0" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)' }}>
-          🚀 Zero-Config MERN Starter
+          🚀 Zero-Config Starter Templates
         </h1>
         <p className="text-xl mt-2 opacity-95 font-light">Download, Install, Run — Start Building Instantly!</p>
       </header>
@@ -88,13 +136,13 @@ export default function Home() {
           className="bg-white rounded-lg shadow-lg p-8 mb-8 border border-gray-100"
           style={{ boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)' }}
         >
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Select Your Stack Combo</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Select Your Stack</h2>
           <p className="text-gray-600 mb-6">
-            Choose one frontend and one backend to create your perfect stack:
+            Choose a full-stack Next.js app OR select one frontend and one backend:
           </p>
 
           {/* Selected Combo Display */}
-          {selectedFrontend && selectedBackend && (
+          {(isStandalone || (selectedFrontend && selectedBackend)) && (
             <div
               style={{
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -104,20 +152,91 @@ export default function Home() {
             >
               <h3 className="text-lg font-semibold text-center mb-4">🎯 Your Selected Stack</h3>
               <div className="flex flex-wrap justify-center items-center gap-3 md:gap-4">
-                <div className="bg-white rounded-lg px-4 md:px-6 py-2 flex items-center gap-2 text-gray-800 font-medium whitespace-nowrap">
-                  <span className="text-2xl">{templateData[selectedFrontend as keyof typeof templateData].icon}</span>
-                  <span className="hidden sm:inline text-sm md:text-base">{templateData[selectedFrontend as keyof typeof templateData].name}</span>
-                </div>
-                <div className="text-white text-2xl opacity-90 font-bold">+</div>
-                <div className="bg-white rounded-lg px-4 md:px-6 py-2 flex items-center gap-2 text-gray-800 font-medium whitespace-nowrap">
-                  <span className="text-2xl">{templateData[selectedBackend as keyof typeof templateData].icon}</span>
-                  <span className="hidden sm:inline text-sm md:text-base">{templateData[selectedBackend as keyof typeof templateData].name}</span>
-                </div>
+                {isStandalone ? (
+                  <div className="bg-white rounded-lg px-4 md:px-6 py-2 flex items-center gap-2 text-gray-800 font-medium whitespace-nowrap">
+                    <span className="text-2xl">▲</span>
+                    <span className="text-sm md:text-base">Next.js Full-Stack (Standalone)</span>
+                  </div>
+                ) : (
+                  <>
+                    <div className="bg-white rounded-lg px-4 md:px-6 py-2 flex items-center gap-2 text-gray-800 font-medium whitespace-nowrap">
+                      <span className="text-2xl">{templateData[selectedFrontend as keyof typeof templateData].icon}</span>
+                      <span className="hidden sm:inline text-sm md:text-base">
+                        {templateData[selectedFrontend as keyof typeof templateData].name}
+                      </span>
+                    </div>
+                    <div className="text-white text-2xl opacity-90 font-bold">+</div>
+                    <div className="bg-white rounded-lg px-4 md:px-6 py-2 flex items-center gap-2 text-gray-800 font-medium whitespace-nowrap">
+                      <span className="text-2xl">{templateData[selectedBackend as keyof typeof templateData].icon}</span>
+                      <span className="hidden sm:inline text-sm md:text-base">
+                        {templateData[selectedBackend as keyof typeof templateData].name}
+                      </span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           )}
 
-          {/* Template Grid */}
+          {/* Full-Stack Standalone Option */}
+          <div className="mb-8">
+            <div
+              style={{
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)',
+              }}
+              className="text-white text-lg font-semibold text-center p-3 rounded-lg mb-4"
+            >
+              ⚡ Full-Stack (All-in-One)
+            </div>
+
+            <label
+              className={`flex items-center p-5 border-2 rounded-lg cursor-pointer transition-all mb-4 ${
+                selectedFrontend === 'nextjs'
+                  ? 'border-green-500 bg-green-50 transform scale-102'
+                  : 'border-gray-200 bg-gray-50 hover:border-green-500 hover:bg-green-50'
+              }`}
+              style={{
+                boxShadow:
+                  selectedFrontend === 'nextjs'
+                    ? '0 4px 12px rgba(16, 185, 129, 0.4)'
+                    : '0 4px 12px rgba(16, 185, 129, 0.15)',
+              }}
+            >
+              <input
+                type="radio"
+                name="stack"
+                value="nextjs"
+                checked={selectedFrontend === 'nextjs'}
+                onChange={(e) => {
+                  setSelectedFrontend(e.target.value);
+                  setSelectedBackend(null);
+                  setError(null);
+                }}
+                className="w-5 h-5 mr-4 cursor-pointer"
+                style={{ accentColor: '#10b981' }}
+              />
+              <span className="text-2xl mr-4">▲</span>
+              <div className="flex-1">
+                <h3 className="font-bold text-gray-800 text-lg">Next.js Full-Stack</h3>
+                <p className="text-gray-600 text-sm">
+                  Complete full-stack app with SQLite, authentication & CRUD - No separate backend needed!
+                </p>
+              </div>
+            </label>
+          </div>
+
+          {/* Divider */}
+          <div className="relative mb-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-white text-gray-500 font-semibold">OR</span>
+            </div>
+          </div>
+
+          {/* Traditional Frontend + Backend Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             {/* Frontend Column */}
             <div>
@@ -168,7 +287,7 @@ export default function Home() {
                     <p className="text-gray-600 text-sm">
                       {frontend === 'react'
                         ? 'Modern React with Vite bundler and TypeScript'
-                        : 'Full-featured Angular with routing'}
+                        : 'Full-featured Angular 21 with SSR and Tailwind'}
                     </p>
                   </div>
                 </label>
@@ -194,7 +313,7 @@ export default function Home() {
                     selectedBackend === backend
                       ? 'border-blue-500 bg-blue-50 transform scale-102'
                       : 'border-gray-200 bg-gray-50 hover:border-blue-500 hover:bg-blue-50'
-                  }`}
+                  } ${isStandalone ? 'opacity-50 cursor-not-allowed' : ''}`}
                   style={{
                     boxShadow:
                       selectedBackend === backend
@@ -207,6 +326,7 @@ export default function Home() {
                     name="backend"
                     value={backend}
                     checked={selectedBackend === backend}
+                    disabled={isStandalone}
                     onChange={(e) => {
                       setSelectedBackend(e.target.value);
                       setError(null);
@@ -223,8 +343,8 @@ export default function Home() {
                     </h3>
                     <p className="text-gray-600 text-sm">
                       {backend === 'express'
-                        ? 'RESTful API with Express.js and TypeScript and Mongoose'
-                        : 'Enterprise NestJS with Postgres SQL and Prisma ORM'}
+                        ? 'RESTful API with Express.js, TypeScript and MongoDB'
+                        : 'Enterprise NestJS with PostgreSQL and Prisma ORM'}
                     </p>
                   </div>
                 </label>
@@ -261,7 +381,18 @@ export default function Home() {
 
           <p className="text-gray-600 font-semibold mb-4">Installation steps:</p>
           <pre className="bg-gray-100 p-6 rounded-lg overflow-x-auto border border-gray-300 font-mono text-sm">
-            {`1. Select one frontend framework (React or Angular)
+            {isStandalone
+              ? `1. Select "Next.js Full-Stack" (standalone app)
+2. Click "Download Stack"
+3. UNBLOCK THE ZIP FILE FIRST (see above)
+4. Extract the ZIP file
+5. Run:
+   cd nextjs
+   npm install
+   npm run dev
+6. Open http://localhost:3000
+7. Complete full-stack app with auth & database included!`
+              : `1. Select one frontend framework (React or Angular)
 2. Select one backend framework (Express.js or NestJS)
 3. Click "Download Stack"
 4. UNBLOCK THE ZIP FILE FIRST (see above)
@@ -287,12 +418,12 @@ export default function Home() {
         {/* Download Button */}
         <button
           onClick={handleDownload}
-          disabled={loading}
+          disabled={loading || !canDownload}
           style={{
-            background: loading
+            background: loading || !canDownload
               ? '#95a5a6'
               : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            boxShadow: loading ? 'none' : '0 4px 16px rgba(102, 126, 234, 0.4)',
+            boxShadow: loading || !canDownload ? 'none' : '0 4px 16px rgba(102, 126, 234, 0.4)',
           }}
           className="block w-full max-w-xs mx-auto px-8 py-4 text-xl font-bold text-white rounded-lg border-0 cursor-pointer transition-all duration-300"
         >
