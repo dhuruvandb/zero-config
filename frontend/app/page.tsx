@@ -260,32 +260,40 @@ export default function Home() {
                   </div>
                 ) : (
                   <>
-                    <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
-                      <div className="flex items-center gap-2 font-medium mb-1">
-                        <span className="text-2xl">{templateData[selectedFrontend as keyof typeof templateData].icon}</span>
-                        <span className="text-sm md:text-base">
-                          {templateData[selectedFrontend as keyof typeof templateData].name}{' '}
-                          {'version' in templateData[selectedFrontend as keyof typeof templateData] ? 
-                            (templateData[selectedFrontend as keyof typeof templateData] as FrontendTemplate | StandaloneTemplate).version : ''}
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-600">
-                        Port: {templateData[selectedFrontend as keyof typeof templateData].port}
-                      </p>
-                    </div>
-                    <div className="text-white text-2xl opacity-90 font-bold">+</div>
-                    <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
-                      <div className="flex items-center gap-2 font-medium mb-1">
-                        <span className="text-2xl">{templateData[selectedBackend as keyof typeof templateData].icon}</span>
-                        <span className="text-sm md:text-base">
-                          {templateData[selectedBackend as keyof typeof templateData].name}
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-600">
-                        Port: {templateData[selectedBackend as keyof typeof templateData].port} | {'database' in templateData[selectedBackend as keyof typeof templateData] ? 
-                          (templateData[selectedBackend as keyof typeof templateData] as BackendTemplate).database : ''}
-                      </p>
-                    </div>
+                    {(() => {
+                      const frontendTemplate = templateData[selectedFrontend as keyof typeof templateData];
+                      const backendTemplate = templateData[selectedBackend as keyof typeof templateData];
+                      return (
+                        <>
+                          <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
+                            <div className="flex items-center gap-2 font-medium mb-1">
+                              <span className="text-2xl">{frontendTemplate.icon}</span>
+                              <span className="text-sm md:text-base">
+                                {frontendTemplate.name}{' '}
+                                {'version' in frontendTemplate ? 
+                                  (frontendTemplate as FrontendTemplate | StandaloneTemplate).version : ''}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-600">
+                              Port: {frontendTemplate.port}
+                            </p>
+                          </div>
+                          <div className="text-white text-2xl opacity-90 font-bold">+</div>
+                          <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
+                            <div className="flex items-center gap-2 font-medium mb-1">
+                              <span className="text-2xl">{backendTemplate.icon}</span>
+                              <span className="text-sm md:text-base">
+                                {backendTemplate.name}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-600">
+                              Port: {backendTemplate.port} | {'database' in backendTemplate ? 
+                                (backendTemplate as BackendTemplate).database : ''}
+                            </p>
+                          </div>
+                        </>
+                      );
+                    })()}
                   </>
                 )}
               </div>
