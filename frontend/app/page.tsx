@@ -22,12 +22,15 @@ interface FrontendTemplate extends BaseTemplate {
 interface BackendTemplate extends BaseTemplate {
   type: 'backend';
   database: string;
+  databaseIcon: string;
   orm: string;
 }
 
 interface StandaloneTemplate extends BaseTemplate {
   type: 'standalone';
   version: string;
+  database: string;
+  databaseIcon: string;
 }
 
 type Template = FrontendTemplate | BackendTemplate | StandaloneTemplate;
@@ -76,6 +79,8 @@ export default function Home() {
       type: 'standalone',
       version: 'v15',
       port: 3000,
+      database: 'SQLite',
+      databaseIcon: '🗄️',
       description: 'SQLite auth, Server Actions, Full CRUD',
       technologies: 'Next.js 15, SQLite, Server Actions, Tailwind CSS 4',
     },
@@ -85,6 +90,7 @@ export default function Home() {
       icon: '🚀',
       type: 'backend',
       database: 'MongoDB',
+      databaseIcon: '🍃',
       orm: 'Mongoose',
       port: 5000,
       description: 'In-memory fallback, Auto-migration',
@@ -96,6 +102,7 @@ export default function Home() {
       icon: '🐱',
       type: 'backend',
       database: 'PostgreSQL',
+      databaseIcon: '🐘',
       orm: 'Prisma',
       port: 5000,
       description: 'Modular architecture, Passport.js',
@@ -107,6 +114,7 @@ export default function Home() {
       icon: '🍃',
       type: 'backend',
       database: 'MySQL',
+      databaseIcon: '🐬',
       orm: 'JPA',
       port: 8080,
       description: 'Spring Security, Enterprise-grade',
@@ -280,9 +288,14 @@ export default function Home() {
               <span className="text-2xl mr-4">▲</span>
               <div className="flex-1">
                 <h3 className="font-bold text-gray-800 text-lg">Next.js v15 App Router (Full-Stack)</h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-600 text-sm mb-2">
                   {templateData.nextjs.description} - Complete app with frontend & backend integrated!
                 </p>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
+                    🗄️ Database: SQLite (Zero-config)
+                  </span>
+                </div>
               </div>
             </label>
           </div>
@@ -365,47 +378,56 @@ export default function Home() {
                 🔧 Backend
               </div>
 
-              {['express', 'nestjs', 'springboot'].map((backend) => (
-                <label
-                  key={backend}
-                  className={`flex items-center p-5 border-2 rounded-lg cursor-pointer transition-all mb-4 ${
-                    selectedBackend === backend
-                      ? 'border-blue-500 bg-blue-50 transform scale-102'
-                      : 'border-gray-200 bg-gray-50 hover:border-blue-500 hover:bg-blue-50'
-                  } ${isStandalone ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  style={{
-                    boxShadow:
+              {['express', 'nestjs', 'springboot'].map((backend) => {
+                const backendTemplate = templateData[backend as keyof typeof templateData] as BackendTemplate;
+                return (
+                  <label
+                    key={backend}
+                    className={`flex items-center p-5 border-2 rounded-lg cursor-pointer transition-all mb-4 ${
                       selectedBackend === backend
-                        ? '0 4px 12px rgba(102, 126, 234, 0.4)'
-                        : '0 4px 12px rgba(102, 126, 234, 0.15)',
-                  }}
-                >
-                  <input
-                    type="radio"
-                    name="backend"
-                    value={backend}
-                    checked={selectedBackend === backend}
-                    disabled={isStandalone}
-                    onChange={(e) => {
-                      setSelectedBackend(e.target.value);
-                      setError(null);
+                        ? 'border-blue-500 bg-blue-50 transform scale-102'
+                        : 'border-gray-200 bg-gray-50 hover:border-blue-500 hover:bg-blue-50'
+                    } ${isStandalone ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    style={{
+                      boxShadow:
+                        selectedBackend === backend
+                          ? '0 4px 12px rgba(102, 126, 234, 0.4)'
+                          : '0 4px 12px rgba(102, 126, 234, 0.15)',
                     }}
-                    className="w-5 h-5 mr-4 cursor-pointer"
-                    style={{ accentColor: '#667eea' }}
-                  />
-                  <span className="text-2xl mr-4">
-                    {templateData[backend as keyof typeof templateData].icon}
-                  </span>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-gray-800 text-lg">
-                      {templateData[backend as keyof typeof templateData].fullName}
-                    </h3>
-                    <p className="text-gray-600 text-sm">
-                      {templateData[backend as keyof typeof templateData].description}
-                    </p>
-                  </div>
-                </label>
-              ))}
+                  >
+                    <input
+                      type="radio"
+                      name="backend"
+                      value={backend}
+                      checked={selectedBackend === backend}
+                      disabled={isStandalone}
+                      onChange={(e) => {
+                        setSelectedBackend(e.target.value);
+                        setError(null);
+                      }}
+                      className="w-5 h-5 mr-4 cursor-pointer"
+                      style={{ accentColor: '#667eea' }}
+                    />
+                    <span className="text-2xl mr-4">{backendTemplate.icon}</span>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-gray-800 text-lg">
+                        {backendTemplate.fullName}
+                      </h3>
+                      <p className="text-gray-600 text-sm mb-2">
+                        {backendTemplate.description}
+                      </p>
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="inline-flex items-center gap-1 bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-medium">
+                          {backendTemplate.databaseIcon} {backendTemplate.database}
+                        </span>
+                        <span className="inline-flex items-center gap-1 bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full font-medium text-xs">
+                          {backendTemplate.orm}
+                        </span>
+                      </div>
+                    </div>
+                  </label>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -448,7 +470,7 @@ export default function Home() {
    npm install
    npm run dev
 6. Open http://localhost:3000
-7. Complete full-stack app with auth & database included!`
+7. Complete full-stack app with auth & SQLite database included!`
               : `1. Select one frontend framework (React/Angular/Vue)
 2. Select one backend framework (Express/NestJS/Spring Boot)
 3. Click "Download Stack"
@@ -460,6 +482,7 @@ export default function Home() {
    npm run dev  # or mvn spring-boot:run for Spring Boot
 7. Frontend: http://localhost:${selectedFrontend ? templateData[selectedFrontend as keyof typeof templateData].port : '5173 or 4200'}
 8. Backend: http://localhost:${selectedBackend ? templateData[selectedBackend as keyof typeof templateData].port : '5000 or 8080'}
+   ${selectedBackend ? `Database: ${(templateData[selectedBackend as keyof typeof templateData] as BackendTemplate).database}` : 'Database setup included'}
 9. Start building your full-stack project instantly!`}
           </pre>
         </div>
@@ -475,65 +498,76 @@ export default function Home() {
         )}
 
         {/* Selected Combo Display */}
-          {(isStandalone || (selectedFrontend && selectedBackend)) && (
-            <div
-              style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                boxShadow: '0 4px 16px rgba(102, 126, 234, 0.3)',
-              }}
-              className="p-6 rounded-lg mb-6 text-white animation"
-            >
-              <h3 className="text-lg font-semibold text-center mb-4">🎯 Your Selected Stack</h3>
-              <div className="flex flex-wrap justify-center items-center gap-3 md:gap-4">
-                {isStandalone ? (
-                  <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
-                    <div className="flex items-center gap-2 font-medium mb-1">
-                      <span className="text-2xl">▲</span>
-                      <span className="text-sm md:text-base">Next.js v15 (Full-Stack)</span>
-                    </div>
-                    <p className="text-xs text-gray-600">Port: 3000 | SQLite + Server Actions</p>
+        {(isStandalone || (selectedFrontend && selectedBackend)) && (
+          <div
+            style={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              boxShadow: '0 4px 16px rgba(102, 126, 234, 0.3)',
+            }}
+            className="p-6 rounded-lg mb-6 text-white animation"
+          >
+            <h3 className="text-lg font-semibold text-center mb-4">🎯 Your Selected Stack</h3>
+            <div className="flex flex-wrap justify-center items-center gap-3 md:gap-4">
+              {isStandalone ? (
+                <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
+                  <div className="flex items-center gap-2 font-medium mb-1">
+                    <span className="text-2xl">▲</span>
+                    <span className="text-sm md:text-base">Next.js v15 (Full-Stack)</span>
                   </div>
-                ) : (
-                  <>
-                    {(() => {
-                      const frontendTemplate = templateData[selectedFrontend as keyof typeof templateData];
-                      const backendTemplate = templateData[selectedBackend as keyof typeof templateData];
-                      return (
-                        <>
-                          <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
-                            <div className="flex items-center gap-2 font-medium mb-1">
-                              <span className="text-2xl">{frontendTemplate.icon}</span>
-                              <span className="text-sm md:text-base">
-                                {frontendTemplate.name}{' '}
-                                {'version' in frontendTemplate ? 
-                                  (frontendTemplate as FrontendTemplate | StandaloneTemplate).version : ''}
-                              </span>
-                            </div>
-                            <p className="text-xs text-gray-600">
-                              Port: {frontendTemplate.port}
-                            </p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="text-xs text-gray-600">Port: 3000</p>
+                    <span className="text-gray-400">•</span>
+                    <p className="text-xs text-gray-600">🗄️ SQLite</p>
+                    <span className="text-gray-400">•</span>
+                    <p className="text-xs text-gray-600">Server Actions</p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {(() => {
+                    const frontendTemplate = templateData[selectedFrontend as keyof typeof templateData];
+                    const backendTemplate = templateData[selectedBackend as keyof typeof templateData] as BackendTemplate;
+                    return (
+                      <>
+                        <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
+                          <div className="flex items-center gap-2 font-medium mb-1">
+                            <span className="text-2xl">{frontendTemplate.icon}</span>
+                            <span className="text-sm md:text-base">
+                              {frontendTemplate.name}{' '}
+                              {'version' in frontendTemplate ? 
+                                (frontendTemplate as FrontendTemplate | StandaloneTemplate).version : ''}
+                            </span>
                           </div>
-                          <div className="text-white text-2xl opacity-90 font-bold">+</div>
-                          <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
-                            <div className="flex items-center gap-2 font-medium mb-1">
-                              <span className="text-2xl">{backendTemplate.icon}</span>
-                              <span className="text-sm md:text-base">
-                                {backendTemplate.name}
-                              </span>
-                            </div>
-                            <p className="text-xs text-gray-600">
-                              Port: {backendTemplate.port} | {'database' in backendTemplate ? 
-                                (backendTemplate as BackendTemplate).database : ''}
-                            </p>
+                          <p className="text-xs text-gray-600">
+                            Port: {frontendTemplate.port}
+                          </p>
+                        </div>
+                        <div className="text-white text-2xl opacity-90 font-bold">+</div>
+                        <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
+                          <div className="flex items-center gap-2 font-medium mb-1">
+                            <span className="text-2xl">{backendTemplate.icon}</span>
+                            <span className="text-sm md:text-base">
+                              {backendTemplate.name}
+                            </span>
                           </div>
-                        </>
-                      );
-                    })()}
-                  </>
-                )}
-              </div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="text-xs text-gray-600">Port: {backendTemplate.port}</p>
+                            <span className="text-gray-400">•</span>
+                            <p className="text-xs text-gray-600">
+                              {backendTemplate.databaseIcon} {backendTemplate.database}
+                            </p>
+                            <span className="text-gray-400">•</span>
+                            <p className="text-xs text-gray-600">{backendTemplate.orm}</p>
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
+                </>
+              )}
             </div>
-          )}
+          </div>
+        )}
 
         {/* Download Button */}
         <button
