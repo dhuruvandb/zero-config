@@ -152,7 +152,7 @@ DELETE /api/items/:id       - Delete item (protected)
 
 ## 🎨 Live Demo
 
-**👉 [Try it now:  https://zero-config-mern-starter-generator.vercel.app](https://zero-config-mern-starter-generator.vercel.app)**
+**👉 [Try it now:  https://zero-config.vercel.app/](https://zero-config.vercel.app/)**
 
 ![Zero-Config Demo](https://img.shields.io/badge/Status-Live-brightgreen?style=flat-square)
 
@@ -326,7 +326,7 @@ Before using Zero-Config templates, ensure you have the following installed:
 
 ### 1️⃣ **Generate Your Project**
 
-Visit **[https://zero-config-mern-starter-generator.vercel.app](https://zero-config-mern-starter-generator.vercel.app)**
+Visit **[https://zero-config.vercel.app/](https://zero-config.vercel.app/)**
 
 1. Select your **frontend** (React, Angular, Vue.js, or Next.js)
 2. Select your **backend** (Express, NestJS, or Spring Boot)
@@ -419,7 +419,7 @@ Want to run the generator on your own machine?
 
 ```bash
 # Clone the repository
-git clone https://github.com/dhuruvandb/zero-config. git
+git clone https://github.com/dhuruvandb/zero-config.git
 cd zero-config
 
 # Install backend dependencies
@@ -666,7 +666,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ## 📬 Contact & Support
 
 - **Author:** [@dhuruvandb](https://github.com/dhuruvandb)
-- **Live Demo:** [zero-config-mern-starter-generator.vercel. app](https://zero-config-mern-starter-generator.vercel.app)
+- **Live Demo:** [zero-config-mern-starter-generator.vercel. app](https://zero-config.vercel.app/)
 - **Issues:** [GitHub Issues](https://github.com/dhuruvandb/zero-config/issues)
 - **Template Source:** [zero-config-templates](https://github.com/dhuruvandb/zero-config-templates)
 
