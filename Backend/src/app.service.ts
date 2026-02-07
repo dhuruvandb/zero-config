@@ -18,7 +18,7 @@ export class AppService {
   private readonly TEMPLATES = {
     react: 'react',
     angular: 'angular',
-    vue: 'vue',
+    vuejs: 'vuejs',
     nextjs: 'nextjs',
     express: 'express',
     nestjs: 'nestjs',

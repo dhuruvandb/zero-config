@@ -59,7 +59,7 @@ export default function Home() {
       description: 'Auth guards, Signals, Tailwind CSS 4',
       technologies: 'Angular 21, SSR, Signals, Tailwind CSS 4.x, Vitest, RxJS',
     },
-    vue: {
+    vuejs: {
       name: 'Vue.js',
       fullName: 'Vue.js + Vite',
       icon: '💚',
@@ -239,67 +239,6 @@ export default function Home() {
             Choose a full-stack Next.js app OR select one frontend (React/Angular/Vue) and one backend (Express/NestJS/Spring Boot):
           </p>
 
-          {/* Selected Combo Display */}
-          {(isStandalone || (selectedFrontend && selectedBackend)) && (
-            <div
-              style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                boxShadow: '0 4px 16px rgba(102, 126, 234, 0.3)',
-              }}
-              className="p-6 rounded-lg mb-6 text-white animation"
-            >
-              <h3 className="text-lg font-semibold text-center mb-4">🎯 Your Selected Stack</h3>
-              <div className="flex flex-wrap justify-center items-center gap-3 md:gap-4">
-                {isStandalone ? (
-                  <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
-                    <div className="flex items-center gap-2 font-medium mb-1">
-                      <span className="text-2xl">▲</span>
-                      <span className="text-sm md:text-base">Next.js v15 (Full-Stack)</span>
-                    </div>
-                    <p className="text-xs text-gray-600">Port: 3000 | SQLite + Server Actions</p>
-                  </div>
-                ) : (
-                  <>
-                    {(() => {
-                      const frontendTemplate = templateData[selectedFrontend as keyof typeof templateData];
-                      const backendTemplate = templateData[selectedBackend as keyof typeof templateData];
-                      return (
-                        <>
-                          <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
-                            <div className="flex items-center gap-2 font-medium mb-1">
-                              <span className="text-2xl">{frontendTemplate.icon}</span>
-                              <span className="text-sm md:text-base">
-                                {frontendTemplate.name}{' '}
-                                {'version' in frontendTemplate ? 
-                                  (frontendTemplate as FrontendTemplate | StandaloneTemplate).version : ''}
-                              </span>
-                            </div>
-                            <p className="text-xs text-gray-600">
-                              Port: {frontendTemplate.port}
-                            </p>
-                          </div>
-                          <div className="text-white text-2xl opacity-90 font-bold">+</div>
-                          <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
-                            <div className="flex items-center gap-2 font-medium mb-1">
-                              <span className="text-2xl">{backendTemplate.icon}</span>
-                              <span className="text-sm md:text-base">
-                                {backendTemplate.name}
-                              </span>
-                            </div>
-                            <p className="text-xs text-gray-600">
-                              Port: {backendTemplate.port} | {'database' in backendTemplate ? 
-                                (backendTemplate as BackendTemplate).database : ''}
-                            </p>
-                          </div>
-                        </>
-                      );
-                    })()}
-                  </>
-                )}
-              </div>
-            </div>
-          )}
-
           {/* Full-Stack Standalone Option */}
           <div className="mb-8">
             <div
@@ -372,7 +311,7 @@ export default function Home() {
                 ⚡ Frontend
               </div>
 
-              {['react', 'angular', 'vue'].map((frontend) => (
+              {['react', 'angular', 'vuejs'].map((frontend) => (
                 <label
                   key={frontend}
                   className={`flex items-center p-5 border-2 rounded-lg cursor-pointer transition-all mb-4 ${
@@ -534,6 +473,67 @@ export default function Home() {
             {error}
           </div>
         )}
+
+        {/* Selected Combo Display */}
+          {(isStandalone || (selectedFrontend && selectedBackend)) && (
+            <div
+              style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                boxShadow: '0 4px 16px rgba(102, 126, 234, 0.3)',
+              }}
+              className="p-6 rounded-lg mb-6 text-white animation"
+            >
+              <h3 className="text-lg font-semibold text-center mb-4">🎯 Your Selected Stack</h3>
+              <div className="flex flex-wrap justify-center items-center gap-3 md:gap-4">
+                {isStandalone ? (
+                  <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
+                    <div className="flex items-center gap-2 font-medium mb-1">
+                      <span className="text-2xl">▲</span>
+                      <span className="text-sm md:text-base">Next.js v15 (Full-Stack)</span>
+                    </div>
+                    <p className="text-xs text-gray-600">Port: 3000 | SQLite + Server Actions</p>
+                  </div>
+                ) : (
+                  <>
+                    {(() => {
+                      const frontendTemplate = templateData[selectedFrontend as keyof typeof templateData];
+                      const backendTemplate = templateData[selectedBackend as keyof typeof templateData];
+                      return (
+                        <>
+                          <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
+                            <div className="flex items-center gap-2 font-medium mb-1">
+                              <span className="text-2xl">{frontendTemplate.icon}</span>
+                              <span className="text-sm md:text-base">
+                                {frontendTemplate.name}{' '}
+                                {'version' in frontendTemplate ? 
+                                  (frontendTemplate as FrontendTemplate | StandaloneTemplate).version : ''}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-600">
+                              Port: {frontendTemplate.port}
+                            </p>
+                          </div>
+                          <div className="text-white text-2xl opacity-90 font-bold">+</div>
+                          <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
+                            <div className="flex items-center gap-2 font-medium mb-1">
+                              <span className="text-2xl">{backendTemplate.icon}</span>
+                              <span className="text-sm md:text-base">
+                                {backendTemplate.name}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-600">
+                              Port: {backendTemplate.port} | {'database' in backendTemplate ? 
+                                (backendTemplate as BackendTemplate).database : ''}
+                            </p>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </>
+                )}
+              </div>
+            </div>
+          )}
 
         {/* Download Button */}
         <button
