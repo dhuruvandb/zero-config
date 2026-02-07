@@ -2,13 +2,43 @@
 
 import { useState } from 'react';
 
+type TemplateType = 'frontend' | 'backend' | 'standalone';
+
+interface BaseTemplate {
+  name: string;
+  fullName: string;
+  icon: string;
+  type: TemplateType;
+  port: number;
+  description: string;
+  technologies: string;
+}
+
+interface FrontendTemplate extends BaseTemplate {
+  type: 'frontend';
+  version: string;
+}
+
+interface BackendTemplate extends BaseTemplate {
+  type: 'backend';
+  database: string;
+  orm: string;
+}
+
+interface StandaloneTemplate extends BaseTemplate {
+  type: 'standalone';
+  version: string;
+}
+
+type Template = FrontendTemplate | BackendTemplate | StandaloneTemplate;
+
 export default function Home() {
   const [selectedFrontend, setSelectedFrontend] = useState<string | null>(null);
   const [selectedBackend, setSelectedBackend] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const templateData = {
+  const templateData: Record<string, Template> = {
     react: {
       name: 'React',
       fullName: 'React + Vite',
@@ -235,7 +265,8 @@ export default function Home() {
                         <span className="text-2xl">{templateData[selectedFrontend as keyof typeof templateData].icon}</span>
                         <span className="text-sm md:text-base">
                           {templateData[selectedFrontend as keyof typeof templateData].name}{' '}
-                          {(templateData[selectedFrontend as keyof typeof templateData] as any).version || ''}
+                          {'version' in templateData[selectedFrontend as keyof typeof templateData] ? 
+                            (templateData[selectedFrontend as keyof typeof templateData] as FrontendTemplate | StandaloneTemplate).version : ''}
                         </span>
                       </div>
                       <p className="text-xs text-gray-600">
@@ -251,7 +282,8 @@ export default function Home() {
                         </span>
                       </div>
                       <p className="text-xs text-gray-600">
-                        Port: {templateData[selectedBackend as keyof typeof templateData].port} | {(templateData[selectedBackend as keyof typeof templateData] as any).database || ''}
+                        Port: {templateData[selectedBackend as keyof typeof templateData].port} | {'database' in templateData[selectedBackend as keyof typeof templateData] ? 
+                          (templateData[selectedBackend as keyof typeof templateData] as BackendTemplate).database : ''}
                       </p>
                     </div>
                   </>
@@ -449,9 +481,9 @@ export default function Home() {
             <h3 className="text-xl font-bold mb-4">🚨 IMPORTANT: Windows Users - Do This FIRST!</h3>
             <ol className="space-y-2 ml-4">
               <li>1. After download, <strong>DO NOT extract yet</strong></li>
-              <li>2. <strong>Right-click the ZIP file</strong> → Select "Properties"</li>
-              <li>3. At the bottom, check the box: <strong>"Unblock"</strong></li>
-              <li>4. Click <strong>"Apply"</strong> then <strong>"OK"</strong></li>
+              <li>2. <strong>Right-click the ZIP file</strong> → Select &quot;Properties&quot;</li>
+              <li>3. At the bottom, check the box: <strong>&quot;Unblock&quot;</strong></li>
+              <li>4. Click <strong>&quot;Apply&quot;</strong> then <strong>&quot;OK&quot;</strong></li>
               <li>5. NOW you can extract without any warnings!</li>
             </ol>
             <p className="mt-4 text-sm">⚡ This unblocks ALL files at once (.gitignore, .editorconfig, etc.)</p>
@@ -479,8 +511,8 @@ export default function Home() {
    cd [template-name]
    npm install  # or mvn install for Spring Boot
    npm run dev  # or mvn spring-boot:run for Spring Boot
-7. Frontend: http://localhost:${selectedFrontend ? (templateData[selectedFrontend as keyof typeof templateData] as any).port : '5173 or 4200'}
-8. Backend: http://localhost:${selectedBackend ? (templateData[selectedBackend as keyof typeof templateData] as any).port : '5000 or 8080'}
+7. Frontend: http://localhost:${selectedFrontend ? templateData[selectedFrontend as keyof typeof templateData].port : '5173 or 4200'}
+8. Backend: http://localhost:${selectedBackend ? templateData[selectedBackend as keyof typeof templateData].port : '5000 or 8080'}
 9. Start building your full-stack project instantly!`}
           </pre>
         </div>
