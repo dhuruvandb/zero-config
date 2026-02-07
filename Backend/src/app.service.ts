@@ -14,9 +14,11 @@ export class AppService {
   private readonly TEMPLATES = {
     react: 'react',
     angular: 'angular',
+    vue: 'vue',
+    nextjs: 'nextjs',
     express: 'express',
     nestjs: 'nestjs',
-    nextjs: 'nextjs',
+    springboot: 'springboot',
   };
 
   private readonly GITHUB_ZIP_URL =
