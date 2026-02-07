@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import fetch from 'node-fetch';
 import unzipper from 'unzipper';
 import archiver from 'archiver';
@@ -59,10 +63,7 @@ export class AppService {
     };
   }
 
-  async generateSingleTemplate(
-    template: string,
-    res: Response,
-  ): Promise<void> {
+  async generateSingleTemplate(template: string, res: Response): Promise<void> {
     if (!this.TEMPLATES[template as keyof typeof this.TEMPLATES]) {
       throw new BadRequestException({
         error: 'Invalid template',
