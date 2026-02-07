@@ -1,23 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Zero-Config Starter",
   description:
     "Instantly generate production-ready full-stack projects without manual setup! Create fully configured MERN/MEAN/PERN stack projects with TypeScript, authentication, and best practices.",
   keywords:
-    "MERN, MEAN, PERN, starter, generator, full-stack, React, Angular, Express, NestJS",
+    "MERN, MEAN, PERN, starter, generator, full-stack, React, Angular, Vue, Next.js, Express, NestJS, Spring Boot",
   authors: [{ name: "dhuruvandb" }],
   openGraph: {
     title: "Zero-Config Starter Generator",
@@ -35,7 +24,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className="antialiased"
+        style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}
       >
         {children}
       </body>

@@ -9,11 +9,79 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   const templateData = {
-    react: { name: 'React + Vite', icon: '⚛️', type: 'frontend' },
-    angular: { name: 'Angular', icon: '🅰️', type: 'frontend' },
-    nextjs: { name: 'Next.js (Full-Stack)', icon: '▲', type: 'standalone' },
-    express: { name: 'Express.js', icon: '🚀', type: 'backend' },
-    nestjs: { name: 'NestJS', icon: '🐱', type: 'backend' },
+    react: {
+      name: 'React',
+      fullName: 'React + Vite',
+      icon: '⚛️',
+      type: 'frontend',
+      version: 'v19',
+      port: 5173,
+      description: 'Auth context, Protected routes, Token refresh',
+      technologies: 'React 19, Vite 7.2, React Router v6, TypeScript 5.9, Tailwind CSS',
+    },
+    angular: {
+      name: 'Angular',
+      fullName: 'Angular + SSR',
+      icon: '🅰️',
+      type: 'frontend',
+      version: 'v21',
+      port: 4200,
+      description: 'Auth guards, Signals, Tailwind CSS 4',
+      technologies: 'Angular 21, SSR, Signals, Tailwind CSS 4.x, Vitest, RxJS',
+    },
+    vue: {
+      name: 'Vue.js',
+      fullName: 'Vue.js + Vite',
+      icon: '💚',
+      type: 'frontend',
+      version: 'v3',
+      port: 5173,
+      description: 'Pinia store, Composition API, Oxlint',
+      technologies: 'Vue 3.5, Pinia 3.0, Vue Router 4.6, Vite 7.3, Oxlint, Tailwind CSS',
+    },
+    nextjs: {
+      name: 'Next.js',
+      fullName: 'Next.js App Router',
+      icon: '▲',
+      type: 'standalone',
+      version: 'v15',
+      port: 3000,
+      description: 'SQLite auth, Server Actions, Full CRUD',
+      technologies: 'Next.js 15, SQLite, Server Actions, Tailwind CSS 4',
+    },
+    express: {
+      name: 'Express',
+      fullName: 'Express.js',
+      icon: '🚀',
+      type: 'backend',
+      database: 'MongoDB',
+      orm: 'Mongoose',
+      port: 5000,
+      description: 'In-memory fallback, Auto-migration',
+      technologies: 'Express 4.18, Mongoose 7, mongodb-memory-server, JWT, bcrypt',
+    },
+    nestjs: {
+      name: 'NestJS',
+      fullName: 'NestJS',
+      icon: '🐱',
+      type: 'backend',
+      database: 'PostgreSQL',
+      orm: 'Prisma',
+      port: 5000,
+      description: 'Modular architecture, Passport.js',
+      technologies: 'NestJS 11, Prisma 6.2, Passport.js, JWT, class-validator',
+    },
+    springboot: {
+      name: 'Spring Boot',
+      fullName: 'Spring Boot',
+      icon: '🍃',
+      type: 'backend',
+      database: 'MySQL',
+      orm: 'JPA',
+      port: 8080,
+      description: 'Spring Security, Enterprise-grade',
+      technologies: 'Spring Boot 4.0.2, Spring Security, JPA, JJWT 0.12, MySQL',
+    },
   };
 
   const handleDownload = async () => {
@@ -138,7 +206,7 @@ export default function Home() {
         >
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Select Your Stack</h2>
           <p className="text-gray-600 mb-6">
-            Choose a full-stack Next.js app OR select one frontend and one backend:
+            Choose a full-stack Next.js app OR select one frontend (React/Angular/Vue) and one backend (Express/NestJS/Spring Boot):
           </p>
 
           {/* Selected Combo Display */}
@@ -153,24 +221,38 @@ export default function Home() {
               <h3 className="text-lg font-semibold text-center mb-4">🎯 Your Selected Stack</h3>
               <div className="flex flex-wrap justify-center items-center gap-3 md:gap-4">
                 {isStandalone ? (
-                  <div className="bg-white rounded-lg px-4 md:px-6 py-2 flex items-center gap-2 text-gray-800 font-medium whitespace-nowrap">
-                    <span className="text-2xl">▲</span>
-                    <span className="text-sm md:text-base">Next.js Full-Stack (Standalone)</span>
+                  <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
+                    <div className="flex items-center gap-2 font-medium mb-1">
+                      <span className="text-2xl">▲</span>
+                      <span className="text-sm md:text-base">Next.js v15 (Full-Stack)</span>
+                    </div>
+                    <p className="text-xs text-gray-600">Port: 3000 | SQLite + Server Actions</p>
                   </div>
                 ) : (
                   <>
-                    <div className="bg-white rounded-lg px-4 md:px-6 py-2 flex items-center gap-2 text-gray-800 font-medium whitespace-nowrap">
-                      <span className="text-2xl">{templateData[selectedFrontend as keyof typeof templateData].icon}</span>
-                      <span className="hidden sm:inline text-sm md:text-base">
-                        {templateData[selectedFrontend as keyof typeof templateData].name}
-                      </span>
+                    <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
+                      <div className="flex items-center gap-2 font-medium mb-1">
+                        <span className="text-2xl">{templateData[selectedFrontend as keyof typeof templateData].icon}</span>
+                        <span className="text-sm md:text-base">
+                          {templateData[selectedFrontend as keyof typeof templateData].name}{' '}
+                          {(templateData[selectedFrontend as keyof typeof templateData] as any).version || ''}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-600">
+                        Port: {templateData[selectedFrontend as keyof typeof templateData].port}
+                      </p>
                     </div>
                     <div className="text-white text-2xl opacity-90 font-bold">+</div>
-                    <div className="bg-white rounded-lg px-4 md:px-6 py-2 flex items-center gap-2 text-gray-800 font-medium whitespace-nowrap">
-                      <span className="text-2xl">{templateData[selectedBackend as keyof typeof templateData].icon}</span>
-                      <span className="hidden sm:inline text-sm md:text-base">
-                        {templateData[selectedBackend as keyof typeof templateData].name}
-                      </span>
+                    <div className="bg-white rounded-lg px-4 md:px-6 py-3 text-gray-800">
+                      <div className="flex items-center gap-2 font-medium mb-1">
+                        <span className="text-2xl">{templateData[selectedBackend as keyof typeof templateData].icon}</span>
+                        <span className="text-sm md:text-base">
+                          {templateData[selectedBackend as keyof typeof templateData].name}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-600">
+                        Port: {templateData[selectedBackend as keyof typeof templateData].port} | {(templateData[selectedBackend as keyof typeof templateData] as any).database || ''}
+                      </p>
                     </div>
                   </>
                 )}
@@ -218,9 +300,9 @@ export default function Home() {
               />
               <span className="text-2xl mr-4">▲</span>
               <div className="flex-1">
-                <h3 className="font-bold text-gray-800 text-lg">Next.js Full-Stack</h3>
+                <h3 className="font-bold text-gray-800 text-lg">Next.js v15 App Router (Full-Stack)</h3>
                 <p className="text-gray-600 text-sm">
-                  Complete full-stack app with SQLite, authentication & CRUD - No separate backend needed!
+                  {templateData.nextjs.description} - Complete app with frontend & backend integrated!
                 </p>
               </div>
             </label>
@@ -250,7 +332,7 @@ export default function Home() {
                 ⚡ Frontend
               </div>
 
-              {['react', 'angular'].map((frontend) => (
+              {['react', 'angular', 'vue'].map((frontend) => (
                 <label
                   key={frontend}
                   className={`flex items-center p-5 border-2 rounded-lg cursor-pointer transition-all mb-4 ${
@@ -282,12 +364,10 @@ export default function Home() {
                   </span>
                   <div className="flex-1">
                     <h3 className="font-bold text-gray-800 text-lg">
-                      {templateData[frontend as keyof typeof templateData].name}
+                      {templateData[frontend as keyof typeof templateData].fullName}
                     </h3>
                     <p className="text-gray-600 text-sm">
-                      {frontend === 'react'
-                        ? 'Modern React with Vite bundler and TypeScript'
-                        : 'Full-featured Angular 21 with SSR and Tailwind'}
+                      {templateData[frontend as keyof typeof templateData].description}
                     </p>
                   </div>
                 </label>
@@ -306,7 +386,7 @@ export default function Home() {
                 🔧 Backend
               </div>
 
-              {['express', 'nestjs'].map((backend) => (
+              {['express', 'nestjs', 'springboot'].map((backend) => (
                 <label
                   key={backend}
                   className={`flex items-center p-5 border-2 rounded-lg cursor-pointer transition-all mb-4 ${
@@ -339,12 +419,10 @@ export default function Home() {
                   </span>
                   <div className="flex-1">
                     <h3 className="font-bold text-gray-800 text-lg">
-                      {templateData[backend as keyof typeof templateData].name}
+                      {templateData[backend as keyof typeof templateData].fullName}
                     </h3>
                     <p className="text-gray-600 text-sm">
-                      {backend === 'express'
-                        ? 'RESTful API with Express.js, TypeScript and MongoDB'
-                        : 'Enterprise NestJS with PostgreSQL and Prisma ORM'}
+                      {templateData[backend as keyof typeof templateData].description}
                     </p>
                   </div>
                 </label>
@@ -392,16 +470,18 @@ export default function Home() {
    npm run dev
 6. Open http://localhost:3000
 7. Complete full-stack app with auth & database included!`
-              : `1. Select one frontend framework (React or Angular)
-2. Select one backend framework (Express.js or NestJS)
+              : `1. Select one frontend framework (React/Angular/Vue)
+2. Select one backend framework (Express/NestJS/Spring Boot)
 3. Click "Download Stack"
 4. UNBLOCK THE ZIP FILE FIRST (see above)
 5. Extract the ZIP file
 6. For each template folder, run:
    cd [template-name]
-   npm install
-   npm run dev
-7. Start building your full-stack project instantly!`}
+   npm install  # or mvn install for Spring Boot
+   npm run dev  # or mvn spring-boot:run for Spring Boot
+7. Frontend: http://localhost:${selectedFrontend ? (templateData[selectedFrontend as keyof typeof templateData] as any).port : '5173 or 4200'}
+8. Backend: http://localhost:${selectedBackend ? (templateData[selectedBackend as keyof typeof templateData] as any).port : '5000 or 8080'}
+9. Start building your full-stack project instantly!`}
           </pre>
         </div>
 
