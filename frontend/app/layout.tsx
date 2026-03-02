@@ -1,5 +1,19 @@
 import type { Metadata } from "next";
+import { IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+  display: "swap",
+});
+
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  variable: "--font-ibm-plex-mono",
+  weight: ["400", "600"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Zero-Config Starter",
@@ -24,8 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className="antialiased"
-        style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}
+        className={`${spaceGrotesk.variable} ${plexMono.variable} antialiased`}
       >
         {children}
       </body>
