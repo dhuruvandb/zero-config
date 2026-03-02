@@ -91,11 +91,11 @@ export default function StackSelector({
                   <p>{templateData[frontend].description}</p>
                   <div className="badge-row">
                     <span className="pill pill-neutral">
-                      {"version" in templateData[frontend]
+                      {String("version" in templateData[frontend]
                         ? templateData[frontend].version
-                        : ""}
+                        : "")}
                     </span>
-                    <span className="pill  pill-accent">Port {templateData[frontend].port}</span>
+                    <span className="pill pill-accent">Port {templateData[frontend].port}</span>
                   </div>
                 </div>
               </label>
