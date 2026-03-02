@@ -50,17 +50,6 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // Security: Redirect HTTP to HTTPS in production
-  async redirects() {
-    return [
-      {
-        source: "/:path*",
-        destination: "/:path*",
-        permanent: false,
-      },
-    ];
-  },
-
   // Security: Environment variables - only expose safe variables
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000",
