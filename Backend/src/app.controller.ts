@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Param, Body, Res } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Res, BadRequestException } from '@nestjs/common';
 import { AppService } from './app.service';
+import { CreateTemplatesDto } from './dto/create-templates.dto';
 
 @Controller('/api')
 export class AppController {
@@ -20,13 +21,22 @@ export class AppController {
     @Param('template') template: string,
     @Res() res: any,
   ): Promise<void> {
+    // Validate template parameter
+    if (!template || typeof template !== 'string') {
+      throw new BadRequestException('Invalid template parameter');
+    }
+
+    if (!/^[a-z0-9\-]+$/.test(template)) {
+      throw new BadRequestException('Template name contains invalid characters');
+    }
+
     try {
       await this.appService.generateSingleTemplate(template, res);
     } catch (err) {
       if (!res.headersSent) {
-        res.status(400).json({
-          error: 'Server error',
-          message: err instanceof Error ? err.message : 'Unknown error',
+        const statusCode = err?.status || 500;
+        res.status(statusCode).json({
+          error: 'Failed to generate template',
         });
       }
     }
@@ -34,16 +44,16 @@ export class AppController {
 
   @Post('/templates')
   async generateCombinedTemplates(
-    @Body() body: { templates: string[] },
+    @Body() body: CreateTemplatesDto,
     @Res() res: any,
   ): Promise<void> {
     try {
       await this.appService.generateCombinedTemplates(body.templates, res);
     } catch (err) {
       if (!res.headersSent) {
-        res.status(400).json({
-          error: 'Invalid request',
-          message: err instanceof Error ? err.message : 'Unknown error',
+        const statusCode = err?.status || 400;
+        res.status(statusCode).json({
+          error: 'Failed to generate templates',
         });
       }
     }
@@ -51,16 +61,16 @@ export class AppController {
 
   @Post('/generate-combined')
   async generateCombined(
-    @Body() body: { templates: string[] },
+    @Body() body: CreateTemplatesDto,
     @Res() res: any,
   ): Promise<void> {
     try {
       await this.appService.generateCombinedTemplates(body.templates, res);
     } catch (err) {
       if (!res.headersSent) {
-        res.status(400).json({
-          error: 'Invalid request',
-          message: err instanceof Error ? err.message : 'Unknown error',
+        const statusCode = err?.status || 400;
+        res.status(statusCode).json({
+          error: 'Failed to generate templates',
         });
       }
     }

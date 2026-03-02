@@ -28,7 +28,11 @@
     "rxjs": "^7.8.1",
     "node-fetch": "^3.3.2",
     "unzipper": "^0.12.3",
-    "express-rate-limit": "^8.2.1"
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "class-validator": "^0.14.1",
+    "class-transformer": "^0.5.1",
+    "dotenv": "^16.4.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
