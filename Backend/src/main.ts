@@ -8,8 +8,25 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('Bootstrap');
 
+  // Security: CORS configuration — must be registered before helmet
+  const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000')
+    .split(',')
+    .map((o) => o.trim());
+
+  app.enableCors({
+    origin: allowedOrigins,
+    credentials: true,
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    optionsSuccessStatus: 200,
+    maxAge: 3600,
+  });
+
   // Security: Helmet for HTTP headers
-  app.use(helmetModule());
+  // crossOriginResourcePolicy must be cross-origin to allow CORS responses
+  app.use(helmetModule({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  }));
 
   // Security: Rate limiting
   const limiter = rateLimitModule({
@@ -37,22 +54,10 @@ async function bootstrap() {
     }),
   );
 
-  // Security: CORS configuration
-  const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000').split(',');
-  
-  app.enableCors({
-    origin: allowedOrigins,
-    credentials: true,
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    optionsSuccessStatus: 200,
-    maxAge: 3600,
-  });
-
   const port = process.env.PORT || 8000;
   const env = process.env.NODE_ENV || 'development';
 
-  await app.listen(port, '127.0.0.1');
+  await app.listen(port, '0.0.0.0');
   logger.log(`Application running on port ${port} in ${env} mode`);
 }
 
