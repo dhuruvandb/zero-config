@@ -8,6 +8,8 @@ import fetch, { Response as FetchResponse } from 'node-fetch';
 import unzipper from 'unzipper';
 import archiver from 'archiver';
 import { Response } from 'express';
+import * as fs from 'fs';
+import * as path from 'path';
 
 interface TemplateFile {
   path: string;
@@ -29,8 +31,9 @@ export class AppService {
     fastify: 'fastify',
   };
 
-  private readonly GITHUB_ZIP_URL =
-    'https://github.com/dhuruvandb/zero-config-templates/archive/refs/heads/main.zip';
+  // Single source of truth: local path or GitHub zip URL
+  // If not set, auto-detects sibling zero-config-templates folder
+  private readonly TEMPLATES_PATH = process.env.TEMPLATES_PATH || '';
 
   // Security: Maximum file sizes and limits
   private readonly MAX_ZIP_SIZE = 50 * 1024 * 1024; // 50MB
@@ -38,12 +41,22 @@ export class AppService {
   private readonly FETCH_TIMEOUT = 30000; // 30 seconds
   private readonly MAX_TEMPLATES_PER_REQUEST = 5;
 
-  private totalExtractedSize = 0;
+  private readonly PROVIDER_MAP: Record<string, string> = {
+    postgresql: 'postgresql',
+    mysql: 'mysql',
+    mariadb: 'mysql',
+    sqlserver: 'sqlserver',
+    sqlite: 'sqlite',
+    cockroachdb: 'cockroachdb',
+    mongodb: 'mongodb',
+  };
 
   async extractTemplateFolder(
     zipBuffer: Buffer,
     templateName: string,
   ): Promise<TemplateFile[]> {
+    let totalExtractedSize = 0;
+
     try {
       // Security: Validate file size
       if (zipBuffer.length > this.MAX_ZIP_SIZE) {
@@ -69,8 +82,8 @@ export class AppService {
           const content = await file.buffer();
 
           // Security: Check extracted size
-          this.totalExtractedSize += content.length;
-          if (this.totalExtractedSize > this.MAX_EXTRACTED_SIZE) {
+          totalExtractedSize += content.length;
+          if (totalExtractedSize > this.MAX_EXTRACTED_SIZE) {
             throw new BadRequestException('Total extracted size exceeds maximum');
           }
 
@@ -99,29 +112,59 @@ export class AppService {
     };
   }
 
+  private resolveTemplateSource(): { type: 'url' | 'local'; path: string } {
+    const envPath = this.TEMPLATES_PATH;
+
+    if (envPath) {
+      return {
+        type: envPath.startsWith('http://') || envPath.startsWith('https://') ? 'url' : 'local',
+        path: envPath,
+      };
+    }
+
+    // Auto-detect sibling zero-config-templates folder
+    const siblingPath = path.resolve(process.cwd(), '..', '..', 'zero-config-templates');
+    if (fs.existsSync(siblingPath)) {
+      this.logger.log(`Auto-detected templates at: ${siblingPath}`);
+      return { type: 'local', path: siblingPath };
+    }
+
+    throw new InternalServerErrorException(
+      'TEMPLATES_PATH not set and zero-config-templates not found. ' +
+      'Set TEMPLATES_PATH in .env to a local path or a GitHub zip URL.',
+    );
+  }
+
   async generateSingleTemplate(template: string, res: Response): Promise<void> {
+    // Security: Whitelist check
+    if (!this.TEMPLATES[template as keyof typeof this.TEMPLATES]) {
+      throw new BadRequestException({
+        error: 'Invalid template',
+        available: Object.keys(this.TEMPLATES),
+      });
+    }
+
+    let files: TemplateFile[] | null = null;
+    let archive: archiver.Archiver | null = null;
+
     try {
-      // Security: Whitelist check
-      if (!this.TEMPLATES[template as keyof typeof this.TEMPLATES]) {
-        throw new BadRequestException({
-          error: 'Invalid template',
-          available: Object.keys(this.TEMPLATES),
-        });
+      const source = this.resolveTemplateSource();
+
+      if (source.type === 'local') {
+        files = this.readLocalTemplateFolder(template, source.path);
+      } else {
+        const response = await this.fetchWithTimeout(source.path);
+        if (!response.ok) {
+          throw new InternalServerErrorException(
+            'Failed to fetch template from ' + source.path,
+          );
+        }
+        const zipBuffer = await response.buffer();
+        files = await this.extractTemplateFolder(zipBuffer, template);
+        // zipBuffer goes out of scope here — ready for GC
       }
 
-      this.totalExtractedSize = 0; // Reset for new request
-
-      const response = await this.fetchWithTimeout(this.GITHUB_ZIP_URL);
-      if (!response.ok) {
-        throw new InternalServerErrorException(
-          'Failed to fetch template from GitHub',
-        );
-      }
-
-      const zipBuffer = await response.buffer();
-      const files = await this.extractTemplateFolder(zipBuffer, template);
-
-      const archive = archiver('zip', { zlib: { level: 9 } });
+      archive = archiver('zip', { zlib: { level: 9 } });
 
       // Security: Set secure headers
       res.setHeader('Content-Type', 'application/zip');
@@ -131,25 +174,49 @@ export class AppService {
       res.setHeader('X-XSS-Protection', '1; mode=block');
 
       archive.pipe(res);
-      files.forEach(({ path, content }) => {
-        archive.append(content, { name: path });
-      });
+      for (const file of files) {
+        archive.append(file.content, { name: file.path });
+      }
       await archive.finalize();
     } catch (err) {
       this.logger.error(`Error generating single template: ${template}`, err);
       throw err;
+    } finally {
+      // Cleanup: release memory
+      if (files) {
+        files.forEach(f => (f.content = Buffer.alloc(0)));
+        files.length = 0;
+      }
+      if (archive) {
+        archive.abort();
+      }
     }
   }
 
-  private readonly PROVIDER_MAP: Record<string, string> = {
-    postgresql: 'postgresql',
-    mysql: 'mysql',
-    mariadb: 'mysql',
-    sqlserver: 'sqlserver',
-    sqlite: 'sqlite',
-    cockroachdb: 'cockroachdb',
-    mongodb: 'mongodb',
-  };
+  private readLocalTemplateFolder(templateName: string, basePath?: string): TemplateFile[] {
+    const templateDir = path.join(basePath || this.TEMPLATES_PATH, templateName);
+    const files: TemplateFile[] = [];
+
+    const walkDir = (dir: string, relativePrefix: string = '') => {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        const relPath = relativePrefix ? `${relativePrefix}/${entry.name}` : entry.name;
+        if (entry.isDirectory()) {
+          walkDir(fullPath, relPath);
+        } else if (entry.isFile()) {
+          files.push({ path: relPath, content: fs.readFileSync(fullPath) });
+        }
+      }
+    };
+
+    if (!fs.existsSync(templateDir)) {
+      throw new BadRequestException(`Template "${templateName}" not found locally`);
+    }
+
+    walkDir(templateDir);
+    return files;
+  }
 
   private replacePrismaProvider(
     files: TemplateFile[],
@@ -166,9 +233,10 @@ export class AppService {
     for (const file of files) {
       if (file.path.endsWith('prisma/schema.prisma')) {
         const content = file.content.toString('utf-8');
+        // Target only the datasource db block's provider, not the generator's
         const updated = content.replace(
-          /provider\s*=\s*"[a-z0-9\-_]+"/,
-          `provider = "${provider}"`,
+          /(datasource db\s*\{[\s\S]*?provider\s*=\s*")[a-z0-9\-_]+(")/,
+          `$1${provider}$2`,
         );
         if (updated !== content) {
           file.content = Buffer.from(updated, 'utf-8');
@@ -183,59 +251,72 @@ export class AppService {
     res: Response,
     database?: string,
   ): Promise<void> {
+    // Security: Validate input
+    if (!Array.isArray(templates) || templates.length === 0) {
+      throw new BadRequestException({
+        error: 'Invalid request',
+        message: 'Provide an array of template names in the body',
+      });
+    }
+
+    // Security: Limit number of templates per request
+    if (templates.length > this.MAX_TEMPLATES_PER_REQUEST) {
+      throw new BadRequestException({
+        error: 'Too many templates',
+        message: `Maximum ${this.MAX_TEMPLATES_PER_REQUEST} templates allowed per request`,
+      });
+    }
+
+    // Security: Validate each template
+    for (const template of templates) {
+      if (!this.TEMPLATES[template as keyof typeof this.TEMPLATES]) {
+        throw new BadRequestException({
+          error: 'Invalid template',
+          message: `Template "${template}" not found`,
+          available: Object.keys(this.TEMPLATES),
+        });
+      }
+    }
+
+    const allFiles: TemplateFile[] = [];
+    let archive: archiver.Archiver | null = null;
+
     try {
-      // Security: Validate input
-      if (!Array.isArray(templates) || templates.length === 0) {
-        throw new BadRequestException({
-          error: 'Invalid request',
-          message: 'Provide an array of template names in the body',
-        });
-      }
+      const source = this.resolveTemplateSource();
 
-      // Security: Limit number of templates per request
-      if (templates.length > this.MAX_TEMPLATES_PER_REQUEST) {
-        throw new BadRequestException({
-          error: 'Too many templates',
-          message: `Maximum ${this.MAX_TEMPLATES_PER_REQUEST} templates allowed per request`,
-        });
-      }
-
-      // Security: Validate each template
-      for (const template of templates) {
-        if (!this.TEMPLATES[template as keyof typeof this.TEMPLATES]) {
-          throw new BadRequestException({
-            error: 'Invalid template',
-            message: `Template "${template}" not found`,
-            available: Object.keys(this.TEMPLATES),
-          });
+      if (source.type === 'local') {
+        for (const template of templates) {
+          const files = this.readLocalTemplateFolder(template, source.path);
+          this.replacePrismaProvider(files, database);
+          for (const file of files) {
+            allFiles.push({ path: `${template}/${file.path}`, content: file.content });
+          }
+          // Allow GC to reclaim the intermediate array
+          (files as TemplateFile[]).length = 0;
         }
+      } else {
+        const response = await this.fetchWithTimeout(source.path);
+        if (!response.ok) {
+          throw new InternalServerErrorException(
+            'Failed to fetch templates from ' + source.path,
+          );
+        }
+
+        const zipBuffer = await response.buffer();
+
+        for (const template of templates) {
+          const files = await this.extractTemplateFolder(zipBuffer, template);
+          this.replacePrismaProvider(files, database);
+          for (const file of files) {
+            allFiles.push({ path: `${template}/${file.path}`, content: file.content });
+          }
+          // Allow GC to reclaim the intermediate array
+          (files as TemplateFile[]).length = 0;
+        }
+        // zipBuffer goes out of scope here — ready for GC
       }
 
-      this.totalExtractedSize = 0; // Reset for new request
-
-      const response = await this.fetchWithTimeout(this.GITHUB_ZIP_URL);
-      if (!response.ok) {
-        throw new InternalServerErrorException(
-          'Failed to fetch templates from GitHub',
-        );
-      }
-
-      const zipBuffer = await response.buffer();
-      const allFiles: TemplateFile[] = [];
-
-      for (const template of templates) {
-        const files = await this.extractTemplateFolder(zipBuffer, template);
-        // Replace Prisma provider if database was specified
-        this.replacePrismaProvider(files, database);
-        files.forEach(({ path, content }) => {
-          allFiles.push({
-            path: `${template}/${path}`,
-            content,
-          });
-        });
-      }
-
-      const archive = archiver('zip', { zlib: { level: 9 } });
+      archive = archiver('zip', { zlib: { level: 9 } });
 
       const filename =
         templates.length === 1
@@ -250,13 +331,22 @@ export class AppService {
       res.setHeader('X-XSS-Protection', '1; mode=block');
 
       archive.pipe(res);
-      allFiles.forEach(({ path, content }) => {
-        archive.append(content, { name: path });
-      });
+      for (const file of allFiles) {
+        archive.append(file.content, { name: file.path });
+      }
       await archive.finalize();
     } catch (err) {
       this.logger.error('Error generating combined templates', err);
       throw err;
+    } finally {
+      // Cleanup: release memory
+      for (const f of allFiles) {
+        f.content = Buffer.alloc(0);
+      }
+      allFiles.length = 0;
+      if (archive) {
+        archive.abort();
+      }
     }
   }
 
@@ -270,4 +360,3 @@ export class AppService {
     ]) as Promise<FetchResponse>;
   }
 }
-
