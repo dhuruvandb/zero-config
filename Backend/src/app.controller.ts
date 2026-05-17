@@ -4,7 +4,7 @@ import { CreateTemplatesDto } from './dto/create-templates.dto';
 
 @Controller('/api')
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService) { }
 
   @Get('/')
   getHealthStatus() {
@@ -48,7 +48,7 @@ export class AppController {
     @Res() res: any,
   ): Promise<void> {
     try {
-      await this.appService.generateCombinedTemplates(body.templates, res);
+      await this.appService.generateCombinedTemplates(body.templates, res, body.database);
     } catch (err) {
       if (!res.headersSent) {
         const statusCode = err?.status || 400;
@@ -65,7 +65,7 @@ export class AppController {
     @Res() res: any,
   ): Promise<void> {
     try {
-      await this.appService.generateCombinedTemplates(body.templates, res);
+      await this.appService.generateCombinedTemplates(body.templates, res, body.database);
     } catch (err) {
       if (!res.headersSent) {
         const statusCode = err?.status || 400;

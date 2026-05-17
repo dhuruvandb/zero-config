@@ -6,6 +6,7 @@ const DEFAULT_BACKEND_URL = "http://localhost:8000";
 
 interface DownloadPayload {
   templates: string[];
+  database: string;
   filename: string;
   errorMessage: string;
 }
@@ -16,6 +17,7 @@ export function useTemplateDownload() {
 
   const downloadTemplates = async ({
     templates,
+    database,
     filename,
     errorMessage,
   }: DownloadPayload) => {
@@ -30,7 +32,7 @@ export function useTemplateDownload() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ templates }),
+          body: JSON.stringify({ templates, database }),
         }
       );
 

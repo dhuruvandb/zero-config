@@ -51,12 +51,12 @@ export const templateData = {
     type: "backend" as const,
     version: "v4.18",
     port: 5000,
-    database: "MongoDB",
-    databaseIcon: "🍃",
-    orm: "Mongoose",
-    description: "In-memory fallback, Auto-migration",
+    database: "PostgreSQL",
+    databaseIcon: "🐘",
+    orm: "Prisma",
+    description: "Minimalist, unopinionated, Auto-migration",
     technologies:
-      "Express 4.18, Mongoose 7, mongodb-memory-server, JWT, bcrypt",
+      "Express 4.18, Prisma 6, JWT, bcrypt, express-validator",
   },
   nestjs: {
     name: "NestJS",

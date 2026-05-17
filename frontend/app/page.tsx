@@ -30,6 +30,7 @@ export default function Home() {
 
     await downloadTemplates({
       templates: [selectedFrontend, selectedBackend],
+      database: selectedDatabase,
       filename: `${selectedFrontend}-${selectedBackend}-stack.zip`,
       errorMessage: "Failed to generate templates",
     });

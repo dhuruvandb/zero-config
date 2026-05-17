@@ -141,9 +141,47 @@ export class AppService {
     }
   }
 
+  private readonly PROVIDER_MAP: Record<string, string> = {
+    postgresql: 'postgresql',
+    mysql: 'mysql',
+    mariadb: 'mysql',
+    sqlserver: 'sqlserver',
+    sqlite: 'sqlite',
+    cockroachdb: 'cockroachdb',
+    mongodb: 'mongodb',
+  };
+
+  private replacePrismaProvider(
+    files: TemplateFile[],
+    database: string | undefined,
+  ): void {
+    if (!database) return;
+
+    const provider = this.PROVIDER_MAP[database];
+    if (!provider) {
+      this.logger.warn(`Unknown database "${database}", skipping provider replacement`);
+      return;
+    }
+
+    for (const file of files) {
+      if (file.path.endsWith('prisma/schema.prisma')) {
+        const content = file.content.toString('utf-8');
+        const updated = content.replace(
+          /provider\s*=\s*"[a-z0-9\-_]+"/,
+          `provider = "${provider}"`,
+        );
+        if (updated !== content) {
+          file.content = Buffer.from(updated, 'utf-8');
+          this.logger.log(`Replaced Prisma provider to "${provider}" in ${file.path}`);
+        }
+      }
+    }
+  }
+
   async generateCombinedTemplates(
     templates: string[],
     res: Response,
+    database?: string,
   ): Promise<void> {
     try {
       // Security: Validate input
@@ -187,6 +225,8 @@ export class AppService {
 
       for (const template of templates) {
         const files = await this.extractTemplateFolder(zipBuffer, template);
+        // Replace Prisma provider if database was specified
+        this.replacePrismaProvider(files, database);
         files.forEach(({ path, content }) => {
           allFiles.push({
             path: `${template}/${path}`,

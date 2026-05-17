@@ -1,4 +1,4 @@
-import { IsArray, IsString, MinLength, MaxLength, Matches } from 'class-validator';
+import { IsArray, IsString, IsOptional, MinLength, MaxLength, Matches } from 'class-validator';
 
 export class CreateTemplatesDto {
   @IsArray()
@@ -10,4 +10,13 @@ export class CreateTemplatesDto {
     message: 'Template names must only contain lowercase letters, numbers, and hyphens',
   })
   templates: string[];
+
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(20)
+  @Matches(/^[a-z0-9\-_]+$/, {
+    message: 'Database name contains invalid characters',
+  })
+  database?: string;
 }
