@@ -2,21 +2,22 @@
 
 **Instantly generate production-ready full-stack projects without manual setup!**
 
-A powerful web-based generator that creates fully configured full-stack projects with TypeScript, authentication, and best practices — all in one click. Supports React, Angular, Vue.js, Next.js, Express.js, NestJS, and Spring Boot.
-
+A powerful web-based generator that creates fully configured full-stack projects with TypeScript, authentication, and best practices — all in one click. Supports React, Angular, Vue.js, Next.js, Express.js, and NestJS.
 
 ---
 
 ## 🎯 What Is This?
 
-**Zero-Config** eliminates the tedious hours spent setting up boilerplate code for full-stack projects. Instead of manually configuring TypeScript, bundlers, databases, authentication, and folder structures, simply: 
+**Zero-Config** eliminates the tedious hours spent setting up boilerplate code for full-stack projects. Instead of manually configuring TypeScript, bundlers, databases, authentication, and folder structures, simply:
 
-1. **Select** your frontend framework (React, Angular, Vue.js, or Next.js)
-2. **Select** your backend framework (Express.js, NestJS, or Spring Boot)
-3. **Download** a fully configured, production-ready project
-4. **Start coding** immediately! 
+1. **Select** your frontend framework (React, Angular, or Vue.js)
+2. **Select** your backend framework (Express.js or NestJS)
+3. **Select** Next.js for a full-stack standalone app
+4. **Download** a fully configured, production-ready project
+5. **Start coding** immediately!
 
-Perfect for: 
+Perfect for:
+
 - 🚀 Rapid prototyping
 - 📚 Learning full-stack development
 - 🏗️ Bootstrapping new projects
@@ -31,6 +32,7 @@ Perfect for:
 ### 🎨 **Frontend Options**
 
 #### ⚛️ **React v19 + Vite**
+
 - Modern React 19 with Vite 7.2 bundler
 - TypeScript 5.9 for type safety
 - JWT authentication with Context API
@@ -42,6 +44,7 @@ Perfect for:
 - **Technologies:** React 19, Vite 7.2, React Router v6, TypeScript 5.9, Tailwind CSS
 
 #### 🅰️ **Angular v21 + SSR**
+
 - Angular 21+ with Server-Side Rendering
 - TypeScript strict mode
 - Signal-based state management
@@ -55,6 +58,7 @@ Perfect for:
 - **Technologies:** Angular 21, SSR, Signals, Tailwind CSS 4.x, Vitest, RxJS
 
 #### 💚 **Vue.js v3 + Vite**
+
 - Vue 3.5 with Composition API
 - Pinia 3.0 for state management
 - Vue Router 4.6 for routing
@@ -66,6 +70,7 @@ Perfect for:
 - **Technologies:** Vue 3.5, Pinia 3.0, Vue Router 4.6, Vite 7.3, Oxlint, Tailwind CSS
 
 #### ▲ **Next.js v15 App Router (Full-Stack)**
+
 - Next.js 15 with App Router
 - SQLite database with built-in auth
 - Server Actions for backend logic
@@ -81,6 +86,7 @@ Perfect for:
 ### 🔧 **Backend Options**
 
 #### 🚀 **Express.js + MongoDB**
+
 - Express 4.18 with TypeScript
 - MongoDB with Mongoose 7 ODM
 - JWT authentication (Access + Refresh tokens)
@@ -98,6 +104,7 @@ Perfect for:
 - **Technologies:** Express 4.18, Mongoose 7, mongodb-memory-server, JWT, bcrypt
 
 **API Endpoints:**
+
 ```
 POST   /api/auth/register   - Register new user
 POST   /api/auth/login      - Login and get tokens
@@ -109,6 +116,7 @@ DELETE /api/items/:id       - Delete item (protected)
 ```
 
 #### 🐱 **NestJS + PostgreSQL + Prisma**
+
 - NestJS 11+ with strict TypeScript
 - PostgreSQL database
 - Prisma 6.2 ORM for type-safe queries
@@ -126,33 +134,18 @@ DELETE /api/items/:id       - Delete item (protected)
 - **Technologies:** NestJS 11, Prisma 6.2, Passport.js, JWT, class-validator
 
 **Features:**
+
 - Token rotation on refresh
 - Secure cookie-based refresh tokens
 - Strong password validation
 - Prisma migrations
 - Prisma Studio for database management
 
-#### 🍃 **Spring Boot + MySQL + JPA**
-- Spring Boot 4.0.2 (Java 17+)
-- MySQL database
-- Spring Data JPA for ORM
-- Spring Security for authentication
-- JJWT 0.12 for JWT tokens
-- Enterprise-grade architecture
-- RESTful API design
-- Dependency injection
-- Maven build system
-- Port: **8080**
-- **Database:** MySQL
-- **ORM:** JPA
-- **Features:** Spring Security, Enterprise-grade
-- **Technologies:** Spring Boot 4.0.2, Spring Security, JPA, JJWT 0.12, MySQL
-
 ---
 
 ## 🎨 Live Demo
 
-**👉 [Try it now:  https://zero-config.vercel.app/](https://zero-config.vercel.app/)**
+**👉 [Try it now: https://zero-config.vercel.app/](https://zero-config.vercel.app/)**
 
 ![Zero-Config Demo](https://img.shields.io/badge/Status-Live-brightgreen?style=flat-square)
 
@@ -163,6 +156,7 @@ DELETE /api/items/:id       - Delete item (protected)
 Each generated project includes:
 
 ### ✅ **Frontend (React)**
+
 ```
 client/
 ├── src/
@@ -184,6 +178,7 @@ client/
 ```
 
 ### ✅ **Frontend (Angular)**
+
 ```
 angular/
 ├── src/
@@ -203,6 +198,7 @@ angular/
 ```
 
 ### ✅ **Frontend (Vue.js)**
+
 ```
 vue/
 ├── src/
@@ -224,6 +220,7 @@ vue/
 ```
 
 ### ✅ **Backend (Express + MongoDB)**
+
 ```
 server/
 ├── src/
@@ -244,6 +241,7 @@ server/
 ```
 
 ### ✅ **Backend (NestJS + PostgreSQL)**
+
 ```
 nestjs/
 ├── src/
@@ -267,34 +265,6 @@ nestjs/
 └── . env.example
 ```
 
-### ✅ **Backend (Spring Boot + MySQL)**
-```
-springboot/
-├── src/
-│   ├── main/
-│   │   ├── java/com/zero/config/
-│   │   │   ├── controller/
-│   │   │   │   ├── AuthController.java
-│   │   │   │   └── ItemController.java
-│   │   │   ├── service/
-│   │   │   │   ├── AuthService.java
-│   │   │   │   └── ItemService.java
-│   │   │   ├── repository/
-│   │   │   │   ├── UserRepository.java
-│   │   │   │   └── ItemRepository.java
-│   │   │   ├── model/
-│   │   │   │   ├── User.java
-│   │   │   │   └── Item.java
-│   │   │   ├── security/
-│   │   │   │   └── JwtAuthenticationFilter.java
-│   │   │   └── Application.java
-│   │   └── resources/
-│   │       └── application.properties
-│   └── test/
-├── pom.xml
-└── mvnw
-```
-
 ---
 
 ## 📋 Prerequisites
@@ -302,20 +272,18 @@ springboot/
 Before using Zero-Config templates, ensure you have the following installed:
 
 ### **For All Templates:**
+
 - **Node.js** v18 or higher ([Download](https://nodejs.org/))
 - **npm** or **yarn** package manager (comes with Node.js)
 - **Git** (optional, for version control)
 
-### **For Spring Boot Template:**
-- **Java Development Kit (JDK)** 17 or higher ([Download](https://www.oracle.com/java/technologies/downloads/))
-- **Maven** 3.6+ ([Download](https://maven.apache.org/download.cgi)) or use the included Maven Wrapper
-
 ### **For Database Templates:**
+
 - **MongoDB** (for Express template) - Or use the built-in in-memory server
 - **PostgreSQL** (for NestJS template) - [Download](https://www.postgresql.org/download/)
-- **MySQL** (for Spring Boot template) - [Download](https://dev.mysql.com/downloads/)
 
 ### **Recommended Tools:**
+
 - **VS Code** with extensions for your chosen framework
 - **Postman** or **Thunder Client** for API testing
 - **Docker** (optional, for containerized databases)
@@ -328,10 +296,11 @@ Before using Zero-Config templates, ensure you have the following installed:
 
 Visit **[https://zero-config.vercel.app/](https://zero-config.vercel.app/)**
 
-1. Select your **frontend** (React, Angular, Vue.js, or Next.js)
-2. Select your **backend** (Express, NestJS, or Spring Boot)
-3. Click **"Download Stack"**
-4. **IMPORTANT (Windows users):** Right-click the ZIP → Properties → Check "Unblock" → Apply
+1. Select your **frontend** (React, Angular, or Vue.js)
+2. Select your **backend** (Express or NestJS)
+3. Or select **Next.js** for a standalone full-stack app
+4. Click **"Download Stack"**
+5. **IMPORTANT (Windows users):** Right-click the ZIP → Properties → Check "Unblock" → Apply
 
 ### 2️⃣ **Extract & Install**
 
@@ -341,10 +310,8 @@ unzip react-express-stack.zip
 cd react-express-stack
 
 # Install backend dependencies
-cd express  # or nestjs, or springboot
-npm install # For Express/NestJS
-# OR
-mvn install # For Spring Boot
+cd express  # or nestjs
+npm install
 
 # Install frontend dependencies (in new terminal)
 cd react    # or angular, or vue
@@ -354,6 +321,7 @@ npm install
 ### 3️⃣ **Configure Environment**
 
 **For Express + MongoDB:**
+
 ```bash
 cd express
 cp .env.example .env
@@ -361,6 +329,7 @@ cp .env.example .env
 ```
 
 **For NestJS + PostgreSQL:**
+
 ```bash
 cd nestjs
 cp .env.example .env
@@ -369,29 +338,18 @@ npx prisma generate
 npx prisma migrate dev --name init
 ```
 
-**For Spring Boot + MySQL:**
-```bash
-cd springboot
-cp application.properties.example src/main/resources/application.properties
-# Edit application.properties with your MySQL connection details
-```
-
 ### 4️⃣ **Run Your Project**
 
 **Backend:**
+
 ```bash
-# Express or NestJS
 cd express  # or nestjs
 npm run dev
 # Server runs on http://localhost:5000
-
-# Spring Boot
-cd springboot
-mvn spring-boot:run
-# Server runs on http://localhost:8080
 ```
 
 **Frontend:**
+
 ```bash
 cd react    # or angular, or vue
 npm run dev
@@ -400,6 +358,7 @@ npm run dev
 ```
 
 **Next.js (Full-Stack):**
+
 ```bash
 cd nextjs
 npm install
@@ -407,7 +366,7 @@ npm run dev
 # App runs on http://localhost:3000
 ```
 
-### 5️⃣ **Start Building!  🎉**
+### 5️⃣ **Start Building! 🎉**
 
 Your full-stack app is now running with authentication, CRUD operations, and TypeScript support!
 
@@ -415,7 +374,7 @@ Your full-stack app is now running with authentication, CRUD operations, and Typ
 
 ## 🛠️ Running the Generator Locally
 
-Want to run the generator on your own machine? 
+Want to run the generator on your own machine?
 
 ```bash
 # Clone the repository
@@ -433,8 +392,13 @@ npm run build
 npm start
 # Server runs on http://localhost:8000
 
-# Open index.html in your browser (from the root directory)
-# Make sure to update the API URL in index.html if needed
+# Install frontend dependencies
+cd frontend
+npm install
+
+# Start the frontend
+npm run dev
+# App runs on http://localhost:3000
 ```
 
 ---
@@ -452,8 +416,8 @@ graph LR
     E --> F[User downloads ZIP]
 ```
 
-1. **Frontend (index.html):** Beautiful UI for template selection
-2. **Backend (Express + TypeScript):** 
+1. **Frontend (Next.js):** Beautiful UI for template selection
+2. **Backend (NestJS + TypeScript):**
    - Fetches templates from [zero-config-templates](https://github.com/dhuruvandb/zero-config-templates) repo
    - Extracts and combines selected templates
    - Generates downloadable ZIP file
@@ -464,7 +428,7 @@ graph LR
 ```
 GET  /api/templates              - List available templates
 POST /api/templates              - Download selected template combo
-GET  /api/generate-template/: id  - Download single template
+GET  /api/generate-template/:id  - Download single template
 ```
 
 ---
@@ -472,6 +436,7 @@ GET  /api/generate-template/: id  - Download single template
 ## 🎓 What's Included in Each Template
 
 ### **Common Features (All Templates)**
+
 - ✅ **100% TypeScript** - Full type safety across the stack
 - ✅ **JWT Authentication** - Access tokens (15 min expiry) + Refresh tokens (7 day expiry)
 - ✅ **Token Rotation** - Automatic token refresh on expiry
@@ -487,6 +452,7 @@ GET  /api/generate-template/: id  - Download single template
 - ✅ **Hot Module Replacement** - Fast development workflow
 
 ### **React Template Extras**
+
 - Context API for state management
 - React Router v6 for navigation
 - Axios with interceptors
@@ -495,6 +461,7 @@ GET  /api/generate-template/: id  - Download single template
 - Tailwind CSS for styling
 
 ### **Angular Template Extras**
+
 - Signal-based state management
 - HTTP interceptors for auth
 - Route guards for protection
@@ -505,6 +472,7 @@ GET  /api/generate-template/: id  - Download single template
 - Tailwind CSS 4.x
 
 ### **Vue.js Template Extras**
+
 - Pinia store for state management
 - Composition API
 - Vue Router for navigation
@@ -514,6 +482,7 @@ GET  /api/generate-template/: id  - Download single template
 - Reactive refs and computed properties
 
 ### **Next.js Template Extras**
+
 - App Router architecture
 - Server Actions for backend logic
 - SQLite database included
@@ -523,6 +492,7 @@ GET  /api/generate-template/: id  - Download single template
 - Tailwind CSS 4
 
 ### **Express Template Extras**
+
 - Mongoose schemas and models
 - MongoDB in-memory server fallback
 - Middleware authentication
@@ -531,6 +501,7 @@ GET  /api/generate-template/: id  - Download single template
 - Environment-based configuration
 
 ### **NestJS Template Extras**
+
 - Prisma ORM with type safety
 - PostgreSQL database
 - Modular architecture (decorators)
@@ -540,31 +511,20 @@ GET  /api/generate-template/: id  - Download single template
 - Passport.js strategies
 - Prisma Studio for database management
 
-### **Spring Boot Template Extras**
-- Spring Security configuration
-- Spring Data JPA repositories
-- MySQL database integration
-- Bean-based dependency injection
-- Maven build system
-- Enterprise-grade architecture
-- RESTful controllers
-- JJWT for JWT handling
-
 ---
 
 ## 📚 Use Cases & Recommended Stack Combinations
 
-| Use Case | Recommended Stack | Why? |
-|----------|-------------------|------|
-| **Rapid Prototyping** | React + Express (in-memory DB) | Fast setup, JavaScript-focused, quick iterations |
-| **Enterprise Apps** | Angular + NestJS + PostgreSQL | Large-scale, strict type safety, modular architecture |
-| **Full-Stack Serverless** | Next.js (Standalone) | Single deployment unit, serverless-ready, unified codebase |
-| **Modern Progressive Web App** | Vue.js + Express | Modern reactive framework, progressive enhancement |
-| **Java Enterprise** | Angular/React + Spring Boot + MySQL | Enterprise ecosystem, established patterns, Java stack |
-| **Learning Full-Stack** | React + Express | Beginner-friendly, consistent JavaScript, gentle learning curve |
-| **Scalable Backend** | Any Frontend + NestJS | Type-safe ORM, modular design, excellent scalability |
-| **Quick MVPs** | Next.js OR React + Express | Fastest time to market, minimal configuration |
-| **Production-Grade** | Angular + NestJS OR Spring Boot | Battle-tested, enterprise support, comprehensive features |
+| Use Case                       | Recommended Stack              | Why?                                                            |
+| ------------------------------ | ------------------------------ | --------------------------------------------------------------- |
+| **Rapid Prototyping**          | React + Express (in-memory DB) | Fast setup, JavaScript-focused, quick iterations                |
+| **Enterprise Apps**            | Angular + NestJS + PostgreSQL  | Large-scale, strict type safety, modular architecture           |
+| **Full-Stack Serverless**      | Next.js (Standalone)           | Single deployment unit, serverless-ready, unified codebase      |
+| **Modern Progressive Web App** | Vue.js + Express               | Modern reactive framework, progressive enhancement              |
+| **Learning Full-Stack**        | React + Express                | Beginner-friendly, consistent JavaScript, gentle learning curve |
+| **Scalable Backend**           | Any Frontend + NestJS          | Type-safe ORM, modular design, excellent scalability            |
+| **Quick MVPs**                 | Next.js OR React + Express     | Fastest time to market, minimal configuration                   |
+| **Production-Grade**           | Angular + NestJS               | Battle-tested, enterprise support, comprehensive features       |
 
 ### 🎯 **Popular Stack Combinations**
 
@@ -588,16 +548,11 @@ GET  /api/generate-template/: id  - Download single template
    - Setup time: ~5 minutes
    - Learning curve: Low to Medium
 
-5. **Java Enterprise** (Spring Boot + Any Frontend)
-   - Best for: Enterprise applications, Java ecosystem
-   - Setup time: ~10-15 minutes
-   - Learning curve: High
-
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Here's how: 
+We welcome contributions! Here's how:
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -606,7 +561,8 @@ We welcome contributions! Here's how:
 5. Open a Pull Request
 
 **Ideas for contributions:**
-- 🎨 Add new templates (Svelte, FastAPI, Django, Go, Rust)
+
+- 🎨 Add new templates (Svelte, FastAPI, Django)
 - 🔧 Add customization options (project name, ports, database selection)
 - 📝 Improve documentation
 - 🐛 Fix bugs
@@ -619,14 +575,11 @@ We welcome contributions! Here's how:
 ## 📝 Roadmap
 
 - [x] Add Vue.js + Vite template
-- [x] Add Spring Boot backend option
 - [x] Update to React 19
 - [x] Update to Angular 21 with SSR
 - [x] Update to Next.js 15 with App Router
 - [x] Add comprehensive template information
-- [ ] Add Svelte template
-- [ ] Add FastAPI backend option
-- [ ] Add Django backend option
+- [ ] Database selection (SQLite, PostgreSQL, MySQL)
 - [ ] Project name customization
 - [ ] Port configuration
 - [ ] Database connection string generator
@@ -640,7 +593,7 @@ We welcome contributions! Here's how:
 
 ## 🐛 Known Issues
 
-- **Windows ZIP Block:** Windows may block files in the ZIP.  **Solution:** Right-click ZIP → Properties → Unblock
+- **Windows ZIP Block:** Windows may block files in the ZIP. **Solution:** Right-click ZIP → Properties → Unblock
 - **CORS in Production:** Update frontend API URLs for production deployment
 
 ---
@@ -666,7 +619,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ## 📬 Contact & Support
 
 - **Author:** [@dhuruvandb](https://github.com/dhuruvandb)
-- **Live Demo:** [zero-config-mern-starter-generator.vercel. app](https://zero-config.vercel.app/)
+- **Live Demo:** [zero-config.vercel.app](https://zero-config.vercel.app/)
 - **Issues:** [GitHub Issues](https://github.com/dhuruvandb/zero-config/issues)
 - **Template Source:** [zero-config-templates](https://github.com/dhuruvandb/zero-config-templates)
 
@@ -674,18 +627,19 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## 🌟 Show Your Support
 
-If this project helped you, give it a ⭐️!  It motivates me to build more awesome tools. 
+If this project helped you, give it a ⭐️! It motivates me to build more awesome tools.
 
 ---
 
 ## 💡 Why Zero-Config?
 
 **Before:**
+
 ```bash
 # 2+ hours of setup
 npx create-react-app client
 cd client && npm install axios react-router-dom
-# Configure TypeScript... 
+# Configure TypeScript...
 # Setup authentication...
 # Create backend...
 # Install Express, MongoDB...
@@ -695,6 +649,7 @@ cd client && npm install axios react-router-dom
 ```
 
 **After:**
+
 ```bash
 # 2 minutes
 1. Click button
@@ -708,7 +663,7 @@ cd client && npm install axios react-router-dom
 
 <div align="center">
 
-### 🚀 **Build your project faster.  Zero config. Zero headaches.  Just code.**
+### 🚀 **Build your project faster. Zero config. Zero headaches. Just code.**
 
 Made with ❤️ by [dhuruvandb](https://github.com/dhuruvandb)
 

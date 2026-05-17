@@ -17,7 +17,7 @@ interface TemplateFile {
 @Injectable()
 export class AppService {
   private readonly logger = new Logger(AppService.name);
-  
+
   // Security: Define allowed templates explicitly
   private readonly TEMPLATES = {
     react: 'react',
@@ -26,7 +26,7 @@ export class AppService {
     nextjs: 'nextjs',
     express: 'express',
     nestjs: 'nestjs',
-    springboot: 'springboot',
+    fastify: 'fastify',
   };
 
   private readonly GITHUB_ZIP_URL =
@@ -67,7 +67,7 @@ export class AppService {
       for (const file of templateFiles) {
         if (file.type === 'File') {
           const content = await file.buffer();
-          
+
           // Security: Check extracted size
           this.totalExtractedSize += content.length;
           if (this.totalExtractedSize > this.MAX_EXTRACTED_SIZE) {
@@ -75,7 +75,7 @@ export class AppService {
           }
 
           const relativePath = file.path.replace(templatePath, '');
-          
+
           // Security: Prevent path traversal
           if (relativePath.includes('..') || relativePath.startsWith('/')) {
             this.logger.warn(`Potential path traversal attempt: ${relativePath}`);
@@ -122,7 +122,7 @@ export class AppService {
       const files = await this.extractTemplateFolder(zipBuffer, template);
 
       const archive = archiver('zip', { zlib: { level: 9 } });
-      
+
       // Security: Set secure headers
       res.setHeader('Content-Type', 'application/zip');
       res.setHeader('Content-Disposition', `attachment; filename="${template}-template.zip"`);

@@ -17,25 +17,14 @@ export default function Home() {
   const [selectedBackend, setSelectedBackend] = useState<TemplateKey | null>(
     null
   );
+  const [selectedDatabase, setSelectedDatabase] = useState<string | null>(null);
   const { loading, error, setError, downloadTemplates } = useTemplateDownload();
 
-  const isStandalone = selectedFrontend === "nextjs";
-  const canDownload = Boolean(
-    isStandalone || (selectedFrontend && selectedBackend)
-  );
+  const canDownload = Boolean(selectedFrontend && selectedBackend && selectedDatabase);
 
   const handleDownload = async () => {
-    if (isStandalone) {
-      await downloadTemplates({
-        templates: ["nextjs"],
-        filename: "nextjs-fullstack.zip",
-        errorMessage: "Failed to generate template",
-      });
-      return;
-    }
-
-    if (!selectedFrontend || !selectedBackend) {
-      setError("Please select both a frontend and a backend");
+    if (!selectedFrontend || !selectedBackend || !selectedDatabase) {
+      setError("Please select a frontend, a backend, and a database");
       return;
     }
 
@@ -53,17 +42,17 @@ export default function Home() {
         <StackSelector
           selectedFrontend={selectedFrontend}
           selectedBackend={selectedBackend}
-          isStandalone={isStandalone}
+          selectedDatabase={selectedDatabase}
           onSelectFrontend={setSelectedFrontend}
           onSelectBackend={setSelectedBackend}
-          onClearBackend={() => setSelectedBackend(null)}
+          onSelectDatabase={setSelectedDatabase}
           onClearError={() => setError(null)}
         />
 
         <Instructions
-          isStandalone={isStandalone}
           selectedFrontend={selectedFrontend}
           selectedBackend={selectedBackend}
+          selectedDatabase={selectedDatabase}
         />
 
         {error ? (
@@ -73,9 +62,9 @@ export default function Home() {
         ) : null}
 
         <SelectedStack
-          isStandalone={isStandalone}
           selectedFrontend={selectedFrontend}
           selectedBackend={selectedBackend}
+          selectedDatabase={selectedDatabase}
         />
 
         <DownloadButton

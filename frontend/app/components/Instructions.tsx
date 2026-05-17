@@ -1,28 +1,31 @@
 import SectionCard from "./SectionCard";
-import { templateData } from "../data/templates";
+import { templateData, databaseOptions } from "../data/templates";
 import type { TemplateKey } from "../data/templates";
 import type { BackendTemplate } from "../types/templates";
 
 interface InstructionsProps {
-  isStandalone: boolean;
   selectedFrontend: TemplateKey | null;
   selectedBackend: TemplateKey | null;
+  selectedDatabase: string | null;
 }
 
 export default function Instructions({
-  isStandalone,
   selectedFrontend,
   selectedBackend,
+  selectedDatabase,
 }: InstructionsProps) {
   const frontendPort = selectedFrontend
     ? templateData[selectedFrontend].port
     : "5173 or 4200";
   const backendPort = selectedBackend
     ? templateData[selectedBackend].port
-    : "5000 or 8080";
+    : "5000";
   const backendDatabase = selectedBackend
     ? (templateData[selectedBackend] as BackendTemplate).database
     : "Database setup included";
+  const dbName = selectedDatabase
+    ? databaseOptions.find((d) => d.id === selectedDatabase)?.name ?? "your database"
+    : "your database";
 
   return (
     <SectionCard title="How To Use" subtitle="Download, unblock, and ship.">
@@ -42,30 +45,20 @@ export default function Instructions({
 
       <p className="section-subtitle">Installation steps:</p>
       <pre className="code-block">
-        {isStandalone
-          ? `1. Select "Next.js Full-Stack" (standalone app)
-2. Click "Download Stack"
-3. UNBLOCK THE ZIP FILE FIRST (see above)
-4. Extract the ZIP file
-5. Run:
-   cd nextjs
+        {`1. Select one frontend framework (React/Angular/Vue/Next.js)
+2. Select one backend framework (Express/NestJS/Fastify)
+3. Select your database (PostgreSQL/MySQL/MariaDB/SQL Server/SQLite/MongoDB/CockroachDB)
+4. Click "Download Stack"
+5. UNBLOCK THE ZIP FILE FIRST (see above)
+6. Extract the ZIP file
+7. For each template folder, run:
+   cd [template-name]
    npm install
    npm run dev
-6. Open http://localhost:3000
-7. Full-stack app with auth and SQLite database included!`
-          : `1. Select one frontend framework (React/Angular/Vue)
-2. Select one backend framework (Express/NestJS/Spring Boot)
-3. Click "Download Stack"
-4. UNBLOCK THE ZIP FILE FIRST (see above)
-5. Extract the ZIP file
-6. For each template folder, run:
-   cd [template-name]
-   npm install  # or mvn install for Spring Boot
-   npm run dev  # or mvn spring-boot:run for Spring Boot
-7. Frontend: http://localhost:${frontendPort}
-8. Backend: http://localhost:${backendPort}
+8. Frontend: http://localhost:${frontendPort}
+9. Backend: http://localhost:${backendPort}
    ${backendDatabase}
-9. Start building your full-stack project instantly!`}
+10. Start building your full-stack project with ${dbName}!`}
       </pre>
     </SectionCard>
   );
