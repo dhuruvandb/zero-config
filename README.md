@@ -1,19 +1,34 @@
 # 🚀 Zero-Config Full-Stack Starter Generator
 
-**Instantly generate production-ready full-stack projects without manual setup.**
+**Generate production-ready full-stack projects instantly — from your terminal.**
 
-A web-based generator that creates fully configured full-stack projects with TypeScript, authentication, and tests — all in one click. Supports React, Angular, Vue.js, Next.js, Express.js, NestJS, and Fastify.
+A CLI-powered project generator with TypeScript, authentication, Prisma ORM, and tests — all built in. Supports 4 frontends, 3 backends, and 7 databases.
+
+---
+
+## Quick Start
+
+```bash
+npx zero-config-cli my-project
+```
+
+That's it. Follow the prompts and start coding in under 30 seconds.
+
+🌐 **Static landing page:** [zero-config.vercel.app](https://zero-config.vercel.app)  
+📦 **npm package:** [zero-config-cli](https://www.npmjs.com/package/zero-config-cli)  
+🐙 **CLI repo:** [github.com/dhuruvandb/zero-config-cli](https://github.com/dhuruvandb/zero-config-cli)
 
 ---
 
 ## What It Does
 
-Pick your stack, download a ZIP, and start coding. Zero-Config handles the boilerplate so you don't have to.
+Pick your stack in 5 interactive prompts, and the CLI generates everything on your machine — no server needed.
 
-1. **Select** frontend (React, Angular, Vue.js, or Next.js for full-stack)
-2. **Select** backend (Express.js, NestJS, or Fastify)
-3. **Select** database (PostgreSQL, MySQL, MariaDB, SQL Server, SQLite, CockroachDB, or MongoDB)
-4. **Download** a project with auth, CRUD, and tests built-in
+1. **Select** frontend (React, Angular, Vue.js, Next.js)
+2. **Name** your frontend folder
+3. **Select** backend (Express.js, NestJS, Fastify)
+4. **Name** your backend folder
+5. **Select** database (PostgreSQL, MySQL, MariaDB, SQL Server, SQLite, CockroachDB, or MongoDB)
 
 ---
 
@@ -64,27 +79,32 @@ Every generated project comes with:
 
 ---
 
-## Generator Architecture
+## Live Demo
 
-The generator itself is a **Next.js 15 frontend** + **NestJS 11 backend**.
-
-The backend resolves templates from a local folder, GitHub URL, or auto-detected sibling directory, extracts the selected folders, swaps the Prisma provider, and packages a ZIP.
-
-**API:**
-
-```
-GET  /api/                       Health check
-GET  /api/templates              List available templates
-POST /api/templates              Download selected stack + database
-```
-
-**Security:** CORS whitelist · Helmet headers · Rate limiting · Input validation · Path traversal prevention · Size limits · 30s fetch timeout
+🌐 [zero-config.vercel.app](https://zero-config.vercel.app/) — Static landing page showcasing stacks and the CLI command.  
+📦 [npmjs.com/package/zero-config-cli](https://www.npmjs.com/package/zero-config-cli) — The CLI package.
 
 ---
 
-## Live Demo
+## CLI Generator
 
-**👉 [https://zero-config.vercel.app/](https://zero-config.vercel.app/)**
+The project generator has moved from web to CLI. Run it anywhere:
+
+```bash
+npx zero-config-cli my-project
+```
+
+It resolves templates from a local folder or GitHub URL, copies the selected frontend + backend, swaps the Prisma provider, and writes everything to disk — **no server needed.**
+
+---
+
+## Related Repos
+
+| Project                                                                      | Description                                 |
+| ---------------------------------------------------------------------------- | ------------------------------------------- |
+| [zero-config-cli](https://github.com/dhuruvandb/zero-config-cli)             | 💻 **CLI generator** — The main tool        |
+| [zero-config](https://github.com/dhuruvandb/zero-config)                     | 🌐 **This repo** — Static landing page      |
+| [zero-config-templates](https://github.com/dhuruvandb/zero-config-templates) | 📦 **Templates source** — Auth, CRUD, tests |
 
 ---
 
