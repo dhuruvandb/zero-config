@@ -16,16 +16,16 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Zero-Config Starter",
+  title: "Zero-Config Starter | CLI-Powered Full-Stack Generator",
   description:
-    "Instantly generate production-ready full-stack projects without manual setup! Create fully configured MERN/MEAN/PERN stack projects with TypeScript, authentication, and best practices.",
+    "Generate production-ready full-stack projects with one command. React, Angular, Vue, Next.js, Express, NestJS, Fastify — with JWT auth, Prisma ORM, CRUD, and tests built in.",
   keywords:
-    "MERN, MEAN, PERN, starter, generator, full-stack, React, Angular, Vue, Next.js, Express, NestJS, Spring Boot",
+    "zero-config, CLI, starter, generator, full-stack, React, Angular, Vue, Next.js, Express, NestJS, Fastify, Prisma, JWT, TypeScript",
   authors: [{ name: "dhuruvandb" }],
   openGraph: {
-    title: "Zero-Config Starter Generator",
+    title: "Zero-Config Starter — CLI Generator",
     description:
-      "Generate production-ready full-stack projects instantly with one click",
+      "Generate a full-stack project in under 30 seconds with one command: npx zero-config-cli my-project",
     type: "website",
   },
 };
